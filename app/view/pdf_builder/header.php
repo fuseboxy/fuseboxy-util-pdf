@@ -28,8 +28,8 @@ $all = array(
 	['div','p'],
 	['ul','ol'],
 	['h1','h2','h3','h4','h5','h6','small'],
-	['img','br','hr'],
-	['pagebreak'],
+	['img'],
+	['br','hr','pagebreak'],
 );
 ob_start();
 if ( isset($xfa['new']) ) :
