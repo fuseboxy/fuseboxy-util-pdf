@@ -1,6 +1,18 @@
-<?php
+<?php /*
+<fusedoc>
+	<io>
+		<in>
+			<object name="$docBean">
+				<number name="id" />
+				<string name="alias" />
+			</object>
+		</in>
+		<out />
+	</io>
+</fusedoc>
+*/
 // breadcrumb
-$arguments['breadcrumb'] = array('PDF Doc', $arguments['doc']);
+$arguments['breadcrumb'] = array('PDF Doc', $docBean->alias);
 
 
 // tab layout config
@@ -8,16 +20,15 @@ $tabLayout = array(
 	'style' => 'tabs',
 	'position' => 'left',
 	'header' => 'PDF Docs',
-	'nav' => array_merge(array_map(fn($item)  => [
-		'name' => $item->alias,
-		'url' => F::url("{$fusebox->controller}&doc={$item->alias}"),
-		'active' => ( $arguments['doc'] == $item->alias ),
-		'class' => !empty($item->disabled) ? 'del' : false,
-		'linkClass' => !empty($item->disabled) ? 'text-muted' : false,
+	'nav' => array_merge(array_map(fn($docItem)  => [
+		'name' => $docItem->alias,
+		'url' => F::url("{$fusebox->controller}&docID={$docItem->id}"),
+		'active' => ( $arguments['docID'] == $docItem->id ),
+		'class' => !empty($docItem->disabled) ? 'del' : false,
+		'linkClass' => !empty($docItem->disabled) ? 'text-muted' : false,
 	], ORM::get('pdfdoc', 'ORDER BY alias, id ')), array([
 		'name' => '+ New Doc',
-		'url' => F::url("{$fusebox->controller}.newDoc"),
-		'active' => ( $arguments['doc'] == '~NEW~' ),
+		'url' => F::url("{$fusebox->controller}.doc-new"),
 		'linkClass' => 'font-italic text-muted',
 		'linkAttr' => array(
 			'data-toggle' => 'ajax-modal',
