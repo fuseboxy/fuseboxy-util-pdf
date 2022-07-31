@@ -32,7 +32,7 @@ $tabLayout = array(
 		'linkClass' => 'font-italic text-muted',
 		'linkAttr' => array(
 			'data-toggle' => 'ajax-modal',
-			'data-target' => '#global-modal-sm',
+			'data-target' => '#global-modal',
 		),
 	])),
 );
