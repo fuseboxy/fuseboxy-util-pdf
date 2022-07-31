@@ -65,22 +65,22 @@
 </form></div></div>
 */ ?>
 	</div>
-	<footer class="modal-footer"><?php
-		// delete button
-		if ( isset($xfa['delete']) ) :
-/*
-			?><a 
-			    href="<?php echo F::url($xfa['deleteDoc']); ?>"
-			    class="btn btn-sm btn-danger ml-1"
-			    onclick="return confirm('You cannot undo this. Are you sure to delete?');"
-			><i class="fa fa-exclamation-triangle"></i> Delete</a><?php
-*/
-		endif;
-		// close button
-		?><button type="button" class="btn btn-link text-dark" data-dismiss="modal">Close</button><?php
-		// save button
-		if ( isset($xfa['submit']) ) :
-			?><button type="submit" class="btn btn-primary">Save Changes</button><?php
-		endif;
-	?></footer>
+	<footer class="modal-footer">
+		<div class="text-right w-100"><?php
+			// delete button
+			if ( isset($xfa['delete']) ) :
+				?><a 
+					href="<?php echo F::url($xfa['delete']); ?>"
+					class="btn btn-outline-danger float-left"
+					onclick="return confirm('You cannot undo this. Are you sure to delete?');"
+				><i class="fa fa-exclamation-triangle"></i> Delete</a><?php
+			endif;
+			// close button
+			?><button type="button" class="btn btn-link text-dark ml-1" data-dismiss="modal">Close</button><?php
+			// save button
+			if ( isset($xfa['submit']) ) :
+				?><button type="submit" class="btn btn-primary ml-1">Save Changes</button><?php
+			endif;
+		?></div>
+	</footer>
 </form>

@@ -14,7 +14,7 @@ switch ( $fusebox->action ) :
 		F::error('Argument [docID] is required', empty($arguments['docID']));
 		$docBean = PDFDoc::load($arguments['docID']);
 		F::error(PDFDoc::error(), $docBean === false);
-		$xfa['delete'] = "{$fusebox->controller}.doc-delete&docID={$arguments['docID']}";
+		if ( Auth::userInRole('SUPER') ) $xfa['delete'] = "{$fusebox->controller}.doc-delete&docID={$arguments['docID']}";
 		// *** no break ***
 	case 'doc-new':
 		$xfa['submit'] = "{$fusebox->controller}.doc-save";
@@ -57,8 +57,6 @@ switch ( $fusebox->action ) :
 		if ( empty($docBean->disabled) ) {
 			$xfa['editDoc'] = "{$fusebox->controller}.doc-edit&docID={$arguments['docID']}";
 			$xfa['previewDoc'] = "{$fusebox->controller}.doc-preview&docID={$arguments['docID']}";
-		} else {
-			$xfa['enableDoc'] = "{$fusebox->controller}.doc-toggle&docID={$arguments['docID']}&disabled=0";
 		}
 		// config
 		$scaffold = array(
