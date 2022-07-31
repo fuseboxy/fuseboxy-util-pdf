@@ -3,6 +3,8 @@ F::redirect('auth', !Auth::user());
 F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 
 
+require_once dirname(dirname(dirname(__DIR__))).'/fuseboxy-util/app/model/Util_PDF.php';
+require_once dirname(dirname(dirname(__DIR__))).'/fuseboxy-pdfbuilder/app/model/PDFDoc.php';
 // run!
 switch ( $fusebox->action ) :
 
@@ -33,8 +35,9 @@ switch ( $fusebox->action ) :
 		$docBean = ORM::get('pdfdoc', $arguments['docID']);
 		F::error(ORM::error(), $docBean === false);
 		F::error("PDF Doc not found (docID={$arguments['docID']})", empty($docBean->id));
+die(PDFDoc::render($docBean, 'html'));
 		$rendered = PDFDoc::render($docBean);
-		F:error(PDFDoc::error(), $rendered === false);
+		F::error(PDFDoc::error(), $rendered === false);
 		break;
 
 
@@ -70,7 +73,7 @@ switch ( $fusebox->action ) :
 			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
 			'listField' => array(
 				'id|pdfdoc_id' => '60',
-				'seq' => '100',
+				'seq|type' => '100',
 				'value',
 		/*
 				'datetime' => '13%',
@@ -82,11 +85,15 @@ switch ( $fusebox->action ) :
 			),
 			'fieldConfig' => array(
 				'id',
-				'pdfdoc_id' => array('label' => false, 'format' => 'hidden', 'value' => $arguments['docID']),
-				'type' => array('label' => false, 'default' => $arguments['rowType'] ?? ''),
+				'pdfdoc_id' => array('label' => false, 'value' => $arguments['docID'], 'readonly' => true),
+				'type' => array('label' => false, 'default' => $arguments['rowType'] ?? '', 'readonly' => true),
 				'value' => array(
 					'label' => false,
-					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper( $arguments['rowType'] ?? '' ).'</strong>',
+					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper(call_user_func(function() use ($arguments){
+						if ( !empty($arguments['rowType']) ) return $arguments['rowType'];
+						if ( !empty($arguments['id']) ) return ORM::get('pdfrow', $arguments['id'])->type;
+						return '';
+					})).'</strong>',
 				),
 				'url',
 				'align',
