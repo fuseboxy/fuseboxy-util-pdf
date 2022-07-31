@@ -38,13 +38,28 @@ F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 switch ( $fusebox->action ) :
 
 
-	// create new doc
+	// crud operations of PDF doc
 	case 'newDoc':
-?><div><h1>Yeah!</h1></div><?php
+		$xfa['submit'] = "{$fusebox->controller}.saveDoc";
+		break;
+	case 'editDoc':
+		F::error('Argument [docID] is required', empty($arguments['docID']));
+		break;
+	case 'toggleDoc':
+		F::error('Argument [docID] is required', empty($arguments['docID']));
+		F::error('Argument [disabled] is required', !isset($arguments['disabled']));
+		break;
+	case 'saveDoc':
+		F::error('Argument [docID] is required', empty($arguments['docID']));
+		F::error('No data submitted', empty($arguments['data']));
+		break;
+	case 'deleteDoc':
+		F::error('Argument [docID] is required', empty($arguments['docID']));
+		F::redirect($fusebox->controller);
 		break;
 
 
-	// crud operations
+	// crud operations of PDF row
 	default:
 		// create new blank doc when none available
 		$docCount = ORM::count('pdfdoc');
@@ -53,6 +68,13 @@ switch ( $fusebox->action ) :
 		F::error(ORM::error(), !$docCount and $saved === false);
 		// default document
 		$arguments['doc'] = $arguments['doc'] ?? ORM::first('pdfdoc', 'ORDER BY alias, id ')->alias;
+		// load record
+		$pdfDoc = ORM::first('pdfdoc', 'alias = ? ORDER BY alias, id ', array($arguments['doc']));
+		F::error(ORM::error(), $pdfDoc === false);
+		// header buttons
+		$xfa['editDoc'] = "{$fusebox->controller}.editDoc&docID={$pdfDoc->id}";
+		$xfa['deleteDoc'] = "{$fusebox->controller}.deleteDoc&docID={$pdfDoc->id}";
+		$xfa[ empty($pdfDoc->disabled) ? 'disableDoc' : 'enableDoc' ] = "{$fusebox->controller}.toggleDoc&docID={$pdfDoc->id}&disabled=".( (int)empty($pdfDoc->disabled) );
 		// config
 		$scaffold = array(
 			'beanType' => 'pdfrow',
