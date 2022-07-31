@@ -1,2 +1,2 @@
-Fuseboxy PDFBuilder
-===================
+Fuseboxy PDF Builder
+====================

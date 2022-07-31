@@ -1,6 +1,6 @@
 {
 	"name": "fuseboxy/fuseboxy-pdfbuilder",
-	"description": "Fuseboxy PDFBuilder - Basic PDF Builder",
+	"description": "Fuseboxy PDF Builder",
 	"license": "MIT",
 	"type": "fuseboxy-module",
 	"require": { "fuseboxy/fuseboxy-installer": "*" },
