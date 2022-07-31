@@ -71,6 +71,7 @@ switch ( $fusebox->action ) :
 			'listField' => array(
 				'id|pdfdoc_id' => '60',
 				'seq' => '100',
+				'value',
 		/*
 				'datetime' => '13%',
 				'username|sim_user' => '13%',
@@ -83,7 +84,10 @@ switch ( $fusebox->action ) :
 				'id',
 				'pdfdoc_id' => array('label' => false, 'format' => 'hidden', 'value' => $arguments['docID']),
 				'type' => array('label' => false, 'default' => $arguments['rowType'] ?? ''),
-				'value',
+				'value' => array(
+					'label' => false,
+					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper( $arguments['rowType'] ?? '' ).'</strong>',
+				),
 				'url',
 				'align',
 				'color',
