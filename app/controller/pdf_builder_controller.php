@@ -10,33 +10,31 @@ switch ( $fusebox->action ) :
 
 
 	// crud operations of PDF doc
-	case 'doc-new':
-		$xfa['submit'] = "{$fusebox->controller}.saveDoc";
-		break;
 	case 'doc-edit':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
-		$xfa['deleteDoc'] = "{$fusebox->controller}.doc-delete&docID={$arguments['docID']}";
-		$xfa['disableDoc'] = "{$fusebox->controller}.doc-toggle&docID={$arguments['docID']}&disabled=1";
-		break;
-	case 'doc-toggle':
-		F::error('Argument [docID] is required', empty($arguments['docID']));
-		F::error('Argument [disabled] is required', !isset($arguments['disabled']));
+		$docBean = PDFDoc::load($arguments['docID']);
+		F::error(PDFDoc::error(), $docBean === false);
+		$xfa['delete'] = "{$fusebox->controller}.doc-delete&docID={$arguments['docID']}";
+		// *** no break ***
+	case 'doc-new':
+		$xfa['submit'] = "{$fusebox->controller}.doc-save";
+		include dirname(__DIR__).'/view/pdf_builder/doc.form.php';
 		break;
 	case 'doc-save':
-		F::error('Argument [docID] is required', empty($arguments['docID']));
 		F::error('No data submitted', empty($arguments['data']));
+		$saved = PDFDoc::save($arguments['data']);
+		F::error(PDFDoc::error(), $saved === false);
+		F::redirect("{$fusebox->controller}&docID={$arguments['docID']}");
 		break;
 	case 'doc-delete':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
+		$deleted = PDFDoc::delete($arguments['docID']);
+		F::error(PDFDoc::error(), $deleted === false);
 		F::redirect($fusebox->controller);
 		break;
 	case 'doc-preview':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
-		$docBean = ORM::get('pdfdoc', $arguments['docID']);
-		F::error(ORM::error(), $docBean === false);
-		F::error("PDF Doc not found (docID={$arguments['docID']})", empty($docBean->id));
-die(PDFDoc::render($docBean, 'html'));
-		$rendered = PDFDoc::render($docBean);
+		$rendered = PDFDoc::render($arguments['docID']);
 		F::error(PDFDoc::error(), $rendered === false);
 		break;
 
