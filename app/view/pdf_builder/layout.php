@@ -12,12 +12,17 @@ $tabLayout = array(
 		'name' => $item->alias,
 		'url' => F::url("{$fusebox->controller}&doc={$item->alias}"),
 		'active' => ( $arguments['doc'] == $item->alias ),
-		'linkClass' => '',
+		'class' => !empty($item->disabled) ? 'del' : false,
+		'linkClass' => !empty($item->disabled) ? 'text-muted' : false,
 	], ORM::get('pdfdoc', 'ORDER BY alias, id ')), array([
 		'name' => '+ New Doc',
-		'url' => F::url("{$fusebox->controller}&doc=~NEW~"),
+		'url' => F::url("{$fusebox->controller}.newDoc"),
 		'active' => ( $arguments['doc'] == '~NEW~' ),
 		'linkClass' => 'font-italic text-muted',
+		'linkAttr' => array(
+			'data-toggle' => 'ajax-modal',
+			'data-target' => '#global-modal-sm',
+		),
 	])),
 );
 
