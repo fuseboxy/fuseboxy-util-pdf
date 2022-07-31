@@ -1,35 +1,4 @@
-<?php /*
-<fusedoc>
-	<description>
-		generate UI for pdf-builder CRUD operations
-	</description>
-	<io>
-		<in>
-			<structure name="$pdfBuilder" comments="config">
-				<!-- essentials -->
-				<string name="layoutPath" />
-				<string_or_structure name="retainParam" />
-				<!-- permissions -->
-				<boolean name="allowNew" />
-				<boolean name="allowEdit" />
-				<boolean name="allowDelete" />
-				<boolean name="allowToggle" />
-				<boolean name="allowSort" />
-				<!-- filter & order -->
-				<structure name="listFilter">
-					<string name="sql" />
-					<array name="param" />
-				</structure>
-				<string name="listOrder" />
-				<!-- others -->
-				<boolean name="writeLog" />
-			</structure>
-		</in>
-		<out>
-		</out>
-	</io>
-</fusedoc>
-*/
+<?php
 F::redirect('auth', !Auth::user());
 F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 
@@ -39,27 +8,39 @@ switch ( $fusebox->action ) :
 
 
 	// crud operations of PDF doc
-	case 'newDoc':
+	case 'doc-new':
 		$xfa['submit'] = "{$fusebox->controller}.saveDoc";
 		break;
-	case 'editDoc':
+	case 'doc-edit':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
+		$xfa['deleteDoc'] = "{$fusebox->controller}.doc-delete&docID={$arguments['docID']}";
+		$xfa['disableDoc'] = "{$fusebox->controller}.doc-toggle&docID={$arguments['docID']}&disabled=1";
 		break;
-	case 'toggleDoc':
+	case 'doc-toggle':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
 		F::error('Argument [disabled] is required', !isset($arguments['disabled']));
 		break;
-	case 'saveDoc':
+	case 'doc-save':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
 		F::error('No data submitted', empty($arguments['data']));
 		break;
-	case 'deleteDoc':
+	case 'doc-delete':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
 		F::redirect($fusebox->controller);
+		break;
+	case 'doc-preview':
+		F::error('Argument [docID] is required', empty($arguments['docID']));
+		$docBean = ORM::get('pdfdoc', $arguments['docID']);
+		F::error(ORM::error(), $docBean === false);
+		F::error("PDF Doc not found (docID={$arguments['docID']})", empty($docBean->id));
+		$rendered = PDFDoc::render($docBean);
+		F:error(PDFDoc::error(), $rendered === false);
 		break;
 
 
 	// crud operations of PDF row
+	case 'new':
+		F::error('Argument [rowType] is required', empty($arguments['rowType']));
 	default:
 		// create new blank doc when none available
 		$docCount = ORM::count('pdfdoc');
@@ -67,35 +48,29 @@ switch ( $fusebox->action ) :
 		if ( !$docCount ) $saved = ORM::saveNew('pdfdoc', [ 'alias' => 'blank' ]);
 		F::error(ORM::error(), !$docCount and $saved === false);
 		// default document
-		$arguments['doc'] = $arguments['doc'] ?? ORM::first('pdfdoc', 'ORDER BY alias, id ')->alias;
+		$arguments['docID'] = $arguments['docID'] ?? ORM::first('pdfdoc', 'ORDER BY alias, id ')->id;
 		// load record
-		$pdfDoc = ORM::first('pdfdoc', 'alias = ? ORDER BY alias, id ', array($arguments['doc']));
-		F::error(ORM::error(), $pdfDoc === false);
+		$docBean = ORM::get('pdfdoc', $arguments['docID']);
+		F::error(ORM::error(), $docBean === false);
 		// header buttons
-		$xfa['editDoc'] = "{$fusebox->controller}.editDoc&docID={$pdfDoc->id}";
-		$xfa['deleteDoc'] = "{$fusebox->controller}.deleteDoc&docID={$pdfDoc->id}";
-		$xfa[ empty($pdfDoc->disabled) ? 'disableDoc' : 'enableDoc' ] = "{$fusebox->controller}.toggleDoc&docID={$pdfDoc->id}&disabled=".( (int)empty($pdfDoc->disabled) );
+		if ( empty($docBean->disabled) ) {
+			$xfa['editDoc'] = "{$fusebox->controller}.doc-edit&docID={$arguments['docID']}";
+			$xfa['previewDoc'] = "{$fusebox->controller}.doc-preview&docID={$arguments['docID']}";
+		} else {
+			$xfa['enableDoc'] = "{$fusebox->controller}.doc-toggle&docID={$arguments['docID']}&disabled=0";
+		}
 		// config
 		$scaffold = array(
 			'beanType' => 'pdfrow',
 			'editMode' => 'inline',
-			'retainParam' => array('doc' => $arguments['doc']),
+			'retainParam' => array('docID' => $arguments['docID']),
 			'allowDelete' => Auth::userInRole('SUPER'),
 			'layoutPath' => dirname(__DIR__).('/view/pdf_builder/layout.php'),
-		/*
-			'listFilter' => call_user_func(function($arguments){
-				if ( isset($arguments['filterField']) and $arguments['filterField'] == 'remark' and !empty($arguments['filterValue']) ) {
-					return array(" {$arguments['filterField']} LIKE ? ", array('%'.trim($arguments['filterValue']).'%'));
-				} elseif ( isset($arguments['filterField']) and $arguments['filterField'] != 'remark' and isset($arguments['filterValue']) ) {
-					return array(" IFNULL({$arguments['filterField']}, '') = ? ", array($arguments['filterValue']));
-				} else {
-					return false;
-				}
-			}, $arguments),
-			'listOrder' => 'ORDER BY datetime DESC',
-		*/
+			'listFilter' => array('pdfdoc_id = ? ', array($arguments['docID'])),
+			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
 			'listField' => array(
-				'id' => '60',
+				'id|pdfdoc_id' => '60',
+				'seq' => '100',
 		/*
 				'datetime' => '13%',
 				'username|sim_user' => '13%',
@@ -106,16 +81,19 @@ switch ( $fusebox->action ) :
 			),
 			'fieldConfig' => array(
 				'id',
-		/*
-				'datetime' => array('label' => 'Date <small class="muted">/ Time</small>'),
-				'username',
-				'sim_user',
-				'action',
-				'entity_type' => array('label' => 'Entity'),
-				'entity_id' => array('label' => false),
-				'remark',
-				'ip' => array('label' => 'IP'),
-		*/
+				'pdfdoc_id' => array('label' => false, 'format' => 'hidden', 'value' => $arguments['docID']),
+				'type' => array('label' => false, 'default' => $arguments['rowType'] ?? ''),
+				'value',
+				'url',
+				'align',
+				'color',
+				'size',
+				'bold',
+				'italic',
+				'underline',
+				'height',
+				'width',
+				'seq' => array('format' => 'number'),
 			),
 			'scriptPath' => array(
 				'row' => dirname(__DIR__).('/view/pdf_builder/row.php'),
