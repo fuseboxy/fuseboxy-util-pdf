@@ -17,7 +17,7 @@
 	</io>
 </fusedoc>
 */ ?>
-<div id="pdf-builder-doc-view" class="card card-light">
+<div id="pdf-builder-doc-view" class="card alert-primary">
 	<div class="card-body row">
 		<div class="col-9"><?php
 			if ( !empty($docBean->title) ) :

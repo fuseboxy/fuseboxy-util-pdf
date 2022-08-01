@@ -37,34 +37,53 @@
 	<?php endif; ?>
 >
 	<header class="modal-header">
-		<h5 class="modal-title">New Doc</h5>
+		<h5 class="modal-title"><?php echo !empty($docBean->id) ? 'Edit Doc' : 'New Doc'; ?></h5>
 		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	</header>
-	<div class="modal-body">
+	<div class="modal-body pt-0">
 		<input type="hidden" name="data[id]" value ="<?php echo $docBean->id ?? ''; ?>" />
-<?php /*
-<div class="modal-content"><div>
-	<header class="modal-header"></header><div class="modal-body"><div class="form-row"><label class="col-2 col-form-label col-form-label-sm text-right"><span>Alias</span></label><div class="col">
-				<div class="row"><div class="scaffold-col col col-alias"><div class="scaffold-input form-group mb-1"><div class="input-group input-group-sm"><input type="text" class="form-control scaffold-input-text " name="data[alias]" value="">
- </div></div><!--/.form-group--></div></div><!--/.row-->
-			</div><!--/.col-->
-		</div><!--/.form-group--><div class="form-row"><label class="col-2 col-form-label col-form-label-sm text-right"><span>Title</span></label><div class="col">
-				<div class="row"><div class="scaffold-col col col-title"><div class="scaffold-input form-group mb-1"><div class="input-group input-group-sm"><input type="text" class="form-control scaffold-input-text " name="data[title]" value="">
- </div></div><!--/.form-group--></div></div><!--/.row-->
-			</div><!--/.col-->
-		</div><!--/.form-group--><div class="form-row"><label class="col-2 col-form-label col-form-label-sm text-right"><span>Body</span></label><div class="col">
-				<div class="row"><div class="scaffold-col col col-body"><div class="scaffold-input form-group mb-1"><div class="input-group input-group-sm"><input type="text" class="form-control scaffold-input-text " name="data[body]" value="">
- </div></div><!--/.form-group--></div></div><!--/.row-->
-			</div><!--/.col-->
-		</div><!--/.form-group--><div class="form-row"><label class="col-2 col-form-label col-form-label-sm text-right"><span>Disabled</span></label><div class="col">
-				<div class="row"><div class="scaffold-col col col-disabled"><div class="scaffold-input form-group mb-1"><div class="input-group input-group-sm"><select class="custom-select " name="data[disabled]"><option value=""></option><option value="0" selected="">Enable</option><option value="1">Disable</option></select>
-</div></div><!--/.form-group--></div></div><!--/.row-->
-			</div><!--/.col-->
-		</div><!--/.form-group--></div><footer class="modal-footer">
-			<button type="button" class="btn btn-link text-dark scaffold-btn-close" data-dismiss="modal">Close</button></footer>
-</form></div></div>
-*/ ?>
-	</div>
+		<div class="row">
+			<div class="form-group col-8">
+				<label class="col-form-label col-form-label-sm text-muted"><sub><strong>TITLE</strong></sub></label>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text"><small class="fa fa-pen"></small></span>
+					</div>
+					<input 
+						type="text"
+						name="data[title]"
+						class="form-control"
+						value="<?php echo $docBean->title ?? ''; ?>"
+						required
+					/>
+				</div>
+			</div>
+			<div class="form-group col-4 pl-0">
+				<label class="col-form-label col-form-label-sm text-muted"><sub><strong>ALIAS</strong></sub></label>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text"><small class="fa fa-hashtag"></small></span>
+					</div>
+					<input 
+						type="text"
+						name="data[alias]"
+						placeholder="Alias"
+						class="form-control"
+						value="<?php echo $docBean->alias ?? ''; ?>"
+						required
+					/>
+				</div>
+			</div>
+		</div>
+		<div class="form-group mt-n2 mb-2">
+			<label class="col-form-label col-form-label-sm text-muted"><sub><strong>DESCRIPTION</strong></sub></label>
+			<textarea 
+				name="data[body]"
+				class="form-control form-control-sm"
+				rows="5"
+			><?php echo $docBean->body ?? ''; ?></textarea>
+		</div>
+	</div><!--/.modal-body-->
 	<footer class="modal-footer">
 		<div class="text-right w-100"><?php
 			// delete button
