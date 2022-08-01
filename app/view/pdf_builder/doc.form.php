@@ -67,7 +67,6 @@
 					<input 
 						type="text"
 						name="data[alias]"
-						placeholder="Alias"
 						class="form-control"
 						value="<?php echo $docBean->alias ?? ''; ?>"
 						required
@@ -75,10 +74,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="form-group mt-n2 mb-2">
-			<label class="col-form-label col-form-label-sm text-muted"><sub><strong>DESCRIPTION</strong></sub></label>
+		<div class="form-group mb-2">
 			<textarea 
 				name="data[body]"
+				placeholder="Description"
 				class="form-control form-control-sm"
 				rows="5"
 			><?php echo $docBean->body ?? ''; ?></textarea>

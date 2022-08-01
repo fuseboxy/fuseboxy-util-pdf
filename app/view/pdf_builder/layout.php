@@ -5,6 +5,8 @@
 			<object name="$docBean">
 				<number name="id" />
 				<string name="alias" />
+				<string name="title" />
+				<string name="body" />
 			</object>
 		</in>
 		<out />
@@ -12,7 +14,7 @@
 </fusedoc>
 */
 // breadcrumb
-$arguments['breadcrumb'] = array('PDF Doc', $docBean->alias);
+$arguments['breadcrumb'] = false;
 
 
 // tab layout config

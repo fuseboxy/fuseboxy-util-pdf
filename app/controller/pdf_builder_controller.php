@@ -9,55 +9,50 @@ require_once dirname(dirname(dirname(__DIR__))).'/fuseboxy-pdfbuilder/app/model/
 switch ( $fusebox->action ) :
 
 
-	// crud operations of PDF doc
-	case 'doc-edit':
+	// crud operations for PDF doc
+	case 'doc_edit':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
 		$docBean = PDFDoc::load($arguments['docID']);
 		F::error(PDFDoc::error(), $docBean === false);
-		if ( Auth::userInRole('SUPER') ) $xfa['delete'] = "{$fusebox->controller}.doc-delete&docID={$arguments['docID']}";
+		if ( Auth::userInRole('SUPER') ) $xfa['delete'] = "{$fusebox->controller}.doc_delete&docID={$arguments['docID']}";
 		// *** no break ***
-	case 'doc-new':
-		$xfa['submit'] = "{$fusebox->controller}.doc-save";
+	case 'doc_new':
+		$xfa['submit'] = "{$fusebox->controller}.doc_save";
 		include dirname(__DIR__).'/view/pdf_builder/doc.form.php';
 		break;
-	case 'doc-save':
+	case 'doc_save':
 		F::error('No data submitted', empty($arguments['data']));
 		$saved = PDFDoc::save($arguments['data']);
 		F::error(PDFDoc::error(), $saved === false);
-		F::redirect("{$fusebox->controller}&docID={$arguments['docID']}");
+		F::redirect("{$fusebox->controller}&docID={$arguments['data']['id']}");
 		break;
-	case 'doc-delete':
+	case 'doc_delete':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
 		$deleted = PDFDoc::delete($arguments['docID']);
 		F::error(PDFDoc::error(), $deleted === false);
 		F::redirect($fusebox->controller);
 		break;
-	case 'doc-preview':
+	case 'doc_preview':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
 		$rendered = PDFDoc::render($arguments['docID']);
 		F::error(PDFDoc::error(), $rendered === false);
 		break;
 
 
-	// crud operations of PDF row
+	// crud operations for PDF row
 	case 'new':
 		F::error('Argument [rowType] is required', empty($arguments['rowType']));
 	default:
-		// create new blank doc when none available
-		$docCount = ORM::count('pdfdoc');
-		F::error(ORM::error(), $docCount === false);
-		if ( !$docCount ) $saved = ORM::saveNew('pdfdoc', [ 'alias' => 'blank' ]);
-		F::error(ORM::error(), !$docCount and $saved === false);
 		// default document
-		$arguments['docID'] = $arguments['docID'] ?? ORM::first('pdfdoc', 'ORDER BY alias, id ')->id;
-		// load record
+		$inited = PDFDoc::init();
+		F::error(PDFDoc::error(), $inited);
+		$arguments['docID'] = $arguments['docID'] ?? PDFDoc::first('id');
+		// load record for header
 		$docBean = ORM::get('pdfdoc', $arguments['docID']);
 		F::error(ORM::error(), $docBean === false);
-		// header buttons
-		if ( empty($docBean->disabled) ) {
-			$xfa['editDoc'] = "{$fusebox->controller}.doc-edit&docID={$arguments['docID']}";
-			$xfa['previewDoc'] = "{$fusebox->controller}.doc-preview&docID={$arguments['docID']}";
-		}
+		// buttons for header
+		$xfa['editDoc'] = "{$fusebox->controller}.doc_edit&docID={$arguments['docID']}";
+		$xfa['previewDoc'] = "{$fusebox->controller}.doc_preview&docID={$arguments['docID']}";
 		// config
 		$scaffold = array(
 			'beanType' => 'pdfrow',

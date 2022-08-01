@@ -53,6 +53,74 @@ class PDFDoc {
 	/**
 	<fusedoc>
 		<description>
+			load first pdf-doc
+		</description>
+		<io>
+			<in>
+				<string name="$field" optional="yes" />
+			</in>
+			<out>
+				<object name="~return~" type="pdfdoc" optional="yes" oncondition="when {field} not specified" />
+				<mixed name="~return~" optional="yes" oncondition="when {field} specified" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function first($field=null) {
+		// load record
+		$bean = ORM::first('pdfdoc', 'ORDER BY alias, id ');
+		if ( $bean === false ) {
+			self::$error = '[PDFDoc::first] Error loading record ('.ORM::error().')';
+			return false;
+		} elseif ( empty($bean->id) ) {
+			self::$error = '[PDFDoc::first] Record not found';
+			return false;
+		}
+		// done!
+		return empty($field) ? $bean : ( $bean->{$field} ?? null );
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			create new blank pdf-doc when none available
+		</description>
+		<io>
+			<in />
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function init() {
+		// check any record available
+		$count = ORM::count('pdfdoc');
+		if ( $count === false ) {
+			self::$error = '[PDFDoc::init] Error counting records ('.ORM::error().')';
+			return false;
+		}
+		// create record (when necessary)
+		if ( !$count ) {
+			$saved = ORM::saveNew('pdfdoc', [ 'alias' => 'blank' ]);
+			if ( $saved === false ) {
+				self::$error = '[PDFDoc::init] Error saving new record ('.ORM::error().')';
+				return false;
+			}
+		}
+		// done!
+		return false;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			load specific pdf-doc record (when necessary)
 		</description>
 		<io>
@@ -193,7 +261,7 @@ class PDFDoc {
 		} else {
 			$bean = ORM::new('pdfdoc');
 			if ( $bean === false ) {
-				self::$error = '[PDFDoc::save] Error creating new record ('.ORM::error().')';
+				self::$error = '[PDFDoc::save] Error creating container ('.ORM::error().')';
 				return false;
 			}
 		}
