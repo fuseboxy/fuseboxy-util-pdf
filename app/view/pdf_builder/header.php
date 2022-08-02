@@ -26,8 +26,8 @@ $doc = Util::phpQuery(ob_get_clean());
 // custom set of new buttons
 $all = array(
 	['div','p','small'],
-	['ul','ol'],
 	['h1','h2','h3','h4','h5','h6'],
+	['ul','ol'],
 	['img'],
 	['br','hr','pagebreak'],
 );

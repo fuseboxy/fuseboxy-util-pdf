@@ -72,7 +72,7 @@ switch ( $fusebox->action ) :
 			'listField' => array(
 				'id|pdfdoc_id' => '60',
 				'seq|type' => '100',
-				'value',
+				'value|value_output',
 				'align|size|color' => '160',
 				'bold|italic|underline' => '120',
 			),
@@ -97,6 +97,18 @@ switch ( $fusebox->action ) :
 					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
 					'format' => in_array($arguments['rowType'], ['div','p','small','ol','ul']) ? 'textarea' : 'text',
 					'style' => in_array($arguments['rowType'], ['div','p','small','ol','ul']) ? 'height: 82px' : false,
+/*
+'pre-help' => '<div class="row op-50">
+	<div class="col pr-0"><hr class="b-secondary" style="border-style: dashed;"></div>
+	<div class="col-1 p-0 text-center text-muted"><sub><b>PAGEBREAK</b></sub></div>
+	<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;"></div>
+</div>',
+*/
+				),
+				'value_output' => array(
+					'label' => false,
+					'format' => 'output',
+					'value' => '',
 				),
 				'bold' => array(
 					'label' => false,
