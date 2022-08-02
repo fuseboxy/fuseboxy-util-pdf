@@ -39,10 +39,17 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// crud operations for PDF row
+	// determine row type (for field config)
+	case 'edit':
+		F::error('Argument [id] is required', empty($arguments['id']));
+		$rowBean = ORM::get('pdfrow', $arguments['id']);
+		F::error(ORM::error(), $rowBean === false);
+		$arguments['rowType'] = $rowBean->type;
 	case 'new':
 		F::error('Argument [rowType] is required', empty($arguments['rowType']));
+	// crud operations for PDF row
 	default:
+		$arguments['rowType'] = $arguments['rowType'] ?? '';
 		// default document
 		$inited = PDFDoc::init();
 		F::error(PDFDoc::error(), $inited);
@@ -66,36 +73,71 @@ switch ( $fusebox->action ) :
 				'id|pdfdoc_id' => '60',
 				'seq|type' => '100',
 				'value',
-		/*
-				'datetime' => '13%',
-				'username|sim_user' => '13%',
-				'action|ip' => '13%',
-				'entity_type|entity_id' => '13%',
-				'remark' => '30%',
-		*/
+				'align|size|color' => '160',
+				'bold|italic|underline' => '120',
 			),
 			'fieldConfig' => array(
-				'id',
-				'pdfdoc_id' => array('label' => false, 'value' => $arguments['docID'], 'readonly' => true),
-				'type' => array('label' => false, 'default' => $arguments['rowType'] ?? '', 'readonly' => true),
+'id',
+'url',
+				'pdfdoc_id' => array(
+					'label' => false,
+					'value' => $arguments['docID'],
+					'readonly' => true,
+				),
+				'seq' => array(
+					'format' => 'number',
+				),
+				'type' => array(
+					'label' => false,
+					'format' => 'hidden',
+					'default' => $arguments['rowType'],
+				),
 				'value' => array(
 					'label' => false,
-					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper(call_user_func(function() use ($arguments){
-						if ( !empty($arguments['rowType']) ) return $arguments['rowType'];
-						if ( !empty($arguments['id']) ) return ORM::get('pdfrow', $arguments['id'])->type;
-						return '';
-					})).'</strong>',
+					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
+					'format' => in_array($arguments['rowType'], ['div','p','small','ol','ul']) ? 'textarea' : 'text',
+					'style' => in_array($arguments['rowType'], ['div','p','small','ol','ul']) ? 'height: 82px' : false,
 				),
-				'url',
-				'align',
-				'color',
-				'size',
-				'bold',
-				'italic',
-				'underline',
+				'bold' => array(
+					'label' => false,
+					'format' => 'checkbox',
+					'options' => array('1' => '<b>Bold</b>'),
+				),
+				'italic' => array(
+					'label' => false,
+					'format' => 'checkbox',
+					'options' => array('1' => '<i>Italic</i>'),
+				),
+				'underline' => array(
+					'label' => false,
+					'format' => 'checkbox',
+					'options' => array('1' => '<u>Underline</u>'),
+				),
+				'align' => array(
+					'label' => false,
+					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">ALIGN</b>',
+					'options' => array(
+						'left' => 'Left',
+						'right' => 'Right',
+						'center' => 'Center',
+						'justify' => 'Justify',
+					),
+				),
+				'size' => array(
+					'label' => false,
+					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">SIZE</b>',
+					'options' => call_user_func(function(){
+						$options = array();
+						for ( $i=8; $i<=48; $i++ ) $options[$i] = $i;
+						return $options;
+					}),
+				),
+				'color' => array(
+					'label' => false,
+					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">COLOR</b>',
+				),
 				'height',
 				'width',
-				'seq' => array('format' => 'number'),
 			),
 			'scriptPath' => array(
 				'row' => dirname(__DIR__).('/view/pdf_builder/row.php'),
