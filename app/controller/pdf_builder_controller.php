@@ -70,28 +70,23 @@ switch ( $fusebox->action ) :
 			'listFilter' => array('pdfdoc_id = ? ', array($arguments['docID'])),
 			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
 			'listField' => array_merge([
-				'seq|id|pdfdoc_id|type' => '80',
+				'seq|id|pdfdoc_id' => '100',
+				'value' => '60%',
 			], in_array($arguments['rowType'], ['div','p','ul','ol']) ? [
-				'value',
 				'align|size|color' => '160',
 				'bold|italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['small','h1','h2','h3','h4','h5','h6']) ? [
-				'value',
 				'align|color' => '160',
 				'bold|italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['img']) ? [
-				'value',
 				'align|height|width' => '160',
-			] : ( in_array($arguments['rowType'], ['hr','pagebreak']) ? [
-				'value',
-			] : ( in_array($arguments['rowType'], ['br']) ? [
-				'value' => '180',
-				'~empty~',
-			] : []))))),
+			] : [])), [
+				'~empty~|type',
+			]),
 			'fieldConfig' => array_merge([
-				'seq' => array('format' => 'number', 'label' => '<i class="fa fa-sort-amount-down-alt ml-2"></i>', 'default' => 0),
+				'seq' => array('format' => 'number', 'label' => '<i class="fa fa-sort-amount-down-alt"></i>', 'default' => 0),
 				'id' => array('format' => 'hidden', 'label' => false),
-				'type' => array('format' => 'hidden', 'label' => false, 'default' => $arguments['rowType'] ),
+				'type' => array('format' => F::is('*.new,*.edit') ? 'hidden' : 'text', 'label' => false, 'default' => $arguments['rowType'] ),
 				'pdfdoc_id' => array('format' => 'hidden', 'label' => false, 'value' => $arguments['docID']),
 				'value' => array_merge([
 					'label' => false,
@@ -101,7 +96,7 @@ switch ( $fusebox->action ) :
 					'style' => 'height: 82px',
 				] : ( in_array($arguments['rowType'], ['hr']) ? [
 					'format' => 'hidden',
-					'help' => '<hr class="b-dark" />',
+					'help' => '<hr style="border: solid black; border-width: 1px 0 0 0;" />',
 				] : ( in_array($arguments['rowType'], ['pagebreak']) ? [
 					'format' => 'hidden',
 					'help' => '
@@ -111,6 +106,7 @@ switch ( $fusebox->action ) :
 							<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
 						</div>
 					',
+					'value' => '  ',
 				] : ( in_array($arguments['rowType'], ['img']) ? [
 
 				] : ( in_array($arguments['rowType'], ['br']) ? [

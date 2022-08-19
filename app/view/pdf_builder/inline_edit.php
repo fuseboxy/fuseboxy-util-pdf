@@ -7,16 +7,21 @@ $doc = Util::phpQuery(ob_get_clean());
 
 // checkbox cursor & spacing
 $doc->find('.form-check label')->addClass('cursor-pointer');
-$doc->find('.col-bold,.col-italic,.col-underline')->find('.form-group')->removeClass('mb-1')->addClass('mb-n1');
+$doc->find('div.col-bold,div.col-italic,div.col-underline')->find('.form-group')->removeClass('mb-1')->addClass('mb-n1');
 
 
 // adjust field size
-$doc->find('.col-align,.col-size,.col-color,.col-height,.col-width')->find('.input-group')->removeClass('input-group-sm')->addClass('input-group-xs');
+$doc->find('div.col-align,div.col-size,div.col-color,div.col-height,div.col-width')->find('.input-group')->removeClass('input-group-sm')->addClass('input-group-xs');
 
 
 // button column width
-$doc->find('.col-button')->attr('width', 220);
+$doc->find('td.col-button')->attr('width', 220);
 
+
+// add border
+$doc->find('td.col-value')->addClass('bx-1 by-0 b-dark px-5');
+$doc->find('td.col-value')->prev()->addClass('pr-2');
+$doc->find('td.col-value')->next()->addClass('pl-2');
 
 // done!
 echo $doc;

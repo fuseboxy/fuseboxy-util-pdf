@@ -48,7 +48,7 @@ if ( isset($xfa['new']) ) :
 		?></div><?php
 	endforeach; // foreach-group
 endif;
-$doc->find('th.col-button')->html(ob_get_clean());
+$doc->find('th.col-button')->addClass('text-nowrap')->html(ob_get_clean());
 
 
 // display
