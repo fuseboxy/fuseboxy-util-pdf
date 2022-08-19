@@ -3,7 +3,7 @@ F::redirect('auth', !Auth::user());
 F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 
 
-require_once dirname(dirname(dirname(__DIR__))).'/fuseboxy-util/app/model/Util_PDF.php';
+//require_once dirname(dirname(dirname(__DIR__))).'/fuseboxy-util/app/model/Util_PDF.php';
 require_once dirname(dirname(dirname(__DIR__))).'/fuseboxy-pdfbuilder/app/model/PDFDoc.php';
 // run!
 switch ( $fusebox->action ) :
@@ -61,7 +61,7 @@ switch ( $fusebox->action ) :
 		$xfa['editDoc'] = "{$fusebox->controller}.doc_edit&docID={$arguments['docID']}";
 		$xfa['previewDoc'] = "{$fusebox->controller}.doc_preview&docID={$arguments['docID']}";
 		// config
-		$scaffold = array(
+		$scaffold = array_merge([
 			'beanType' => 'pdfrow',
 			'editMode' => 'inline',
 			'retainParam' => array('docID' => $arguments['docID']),
@@ -69,47 +69,76 @@ switch ( $fusebox->action ) :
 			'layoutPath' => dirname(__DIR__).('/view/pdf_builder/layout.php'),
 			'listFilter' => array('pdfdoc_id = ? ', array($arguments['docID'])),
 			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
-			'listField' => array(
-				'id|pdfdoc_id' => '60',
-				'seq|type' => '100',
-				'value|value_output',
+			'listField' => array_merge([
+				'seq|id|pdfdoc_id|type' => '80',
+			], in_array($arguments['rowType'], ['div','p','ul','ol']) ? [
+				'value',
 				'align|size|color' => '160',
 				'bold|italic|underline' => '120',
-			),
-			'fieldConfig' => array(
-'id',
-'url',
-				'pdfdoc_id' => array(
+			] : ( in_array($arguments['rowType'], ['small','h1','h2','h3','h4','h5','h6']) ? [
+				'value',
+				'align|color' => '160',
+				'bold|italic|underline' => '120',
+			] : ( in_array($arguments['rowType'], ['img']) ? [
+				'value',
+				'align|height|width' => '160',
+			] : ( in_array($arguments['rowType'], ['hr','pagebreak']) ? [
+				'value',
+			] : ( in_array($arguments['rowType'], ['br']) ? [
+				'value' => '180',
+				'~empty~',
+			] : []))))),
+			'fieldConfig' => array_merge([
+				'seq' => array('format' => 'number', 'label' => '<i class="fa fa-sort-amount-down-alt ml-2"></i>', 'default' => 0),
+				'id' => array('format' => 'hidden', 'label' => false),
+				'type' => array('format' => 'hidden', 'label' => false, 'default' => $arguments['rowType'] ),
+				'pdfdoc_id' => array('format' => 'hidden', 'label' => false, 'value' => $arguments['docID']),
+				'value' => array_merge([
 					'label' => false,
-					'value' => $arguments['docID'],
-					'readonly' => true,
-				),
-				'seq' => array(
-					'format' => 'number',
-				),
-				'type' => array(
-					'label' => false,
-					'format' => 'hidden',
-					'default' => $arguments['rowType'],
-				),
-				'value' => array(
-					'label' => false,
+				], in_array($arguments['rowType'], ['div','p','small','ol','ul']) ? [
 					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
-					'format' => in_array($arguments['rowType'], ['div','p','small','ol','ul']) ? 'textarea' : 'text',
-					'style' => in_array($arguments['rowType'], ['div','p','small','ol','ul']) ? 'height: 82px' : false,
+					'format' => 'textarea',
+					'style' => 'height: 82px',
+				] : ( in_array($arguments['rowType'], ['hr']) ? [
+					'format' => 'hidden',
+					'help' => '<hr class="b-dark" />',
+				] : ( in_array($arguments['rowType'], ['pagebreak']) ? [
+					'format' => 'hidden',
+					'help' => '
+						<div class="row op-60">
+							<div class="col pr-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
+							<div class="col-1 p-0 text-center text-muted small" style="line-height: 1.75rem;"><b>PAGEBREAK</b></div>
+							<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
+						</div>
+					',
+				] : ( in_array($arguments['rowType'], ['img']) ? [
+
+				] : ( in_array($arguments['rowType'], ['br']) ? [
+					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
+					'format' => 'dropdown',
+					'options' => array_filter(range(0, 9)),
+					'default' => 1,
+				] : [
+					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
+				]))))),
+/*
+					'help' => '	<div class="row op-50 b-1">
+		<div class="col pr-0"><hr class="b-secondary mt-2" style="border-style: dashed;" /></div>
+		<div class="col-1 p-0 text-center text-muted">
+			<sub><b>PAGEBREAK</b></sub>
+		</div>
+		<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
+	</div>',
+*/
 /*
 'pre-help' => '<div class="row op-50">
 	<div class="col pr-0"><hr class="b-secondary" style="border-style: dashed;"></div>
 	<div class="col-1 p-0 text-center text-muted"><sub><b>PAGEBREAK</b></sub></div>
 	<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;"></div>
 </div>',
+				),
 */
-				),
-				'value_output' => array(
-					'label' => false,
-					'format' => 'output',
-					'value' => '',
-				),
+			], [
 				'bold' => array(
 					'label' => false,
 					'format' => 'checkbox',
@@ -148,16 +177,27 @@ switch ( $fusebox->action ) :
 					'label' => false,
 					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">COLOR</b>',
 				),
-				'height',
-				'width',
-			),
+				'height' => array(
+					'label' => false,
+					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">HEIGHT</b>',
+				),
+				'width' => array(
+					'label' => false,
+					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">WIDTH</b>',
+				),
+'url',
+				'~empty~' => array(
+					'label' => false,
+					'format' => 'output',
+				),
+			]),
 			'scriptPath' => array(
 				'row' => dirname(__DIR__).('/view/pdf_builder/row.php'),
 				'header' => dirname(__DIR__).('/view/pdf_builder/header.php'),
 				'inline_edit' => dirname(__DIR__).('/view/pdf_builder/inline_edit.php'),
 			),
 			'writeLog' => class_exists('Log'),
-		);
+		], $pdfBuilderScaffold ?? $pdf_builder_scaffold ?? []);
 		// component
 		include F::appPath('controller/scaffold_controller.php');
 
