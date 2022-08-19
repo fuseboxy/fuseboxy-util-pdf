@@ -117,23 +117,6 @@ switch ( $fusebox->action ) :
 				] : [
 					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
 				]))))),
-/*
-					'help' => '	<div class="row op-50 b-1">
-		<div class="col pr-0"><hr class="b-secondary mt-2" style="border-style: dashed;" /></div>
-		<div class="col-1 p-0 text-center text-muted">
-			<sub><b>PAGEBREAK</b></sub>
-		</div>
-		<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
-	</div>',
-*/
-/*
-'pre-help' => '<div class="row op-50">
-	<div class="col pr-0"><hr class="b-secondary" style="border-style: dashed;"></div>
-	<div class="col-1 p-0 text-center text-muted"><sub><b>PAGEBREAK</b></sub></div>
-	<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;"></div>
-</div>',
-				),
-*/
 			], [
 				'bold' => array(
 					'label' => false,
@@ -189,6 +172,7 @@ switch ( $fusebox->action ) :
 			]),
 			'scriptPath' => array(
 				'row' => dirname(__DIR__).('/view/pdf_builder/row.php'),
+				'list' => dirname(__DIR__).('/view/pdf_builder/list.php'),
 				'header' => dirname(__DIR__).('/view/pdf_builder/header.php'),
 				'inline_edit' => dirname(__DIR__).('/view/pdf_builder/inline_edit.php'),
 			),

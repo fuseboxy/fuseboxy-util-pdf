@@ -42,7 +42,7 @@ if ( isset($xfa['new']) ) :
 					data-toggle="ajax-load"
 					data-mode="after"
 					data-overlay="none"
-					data-target="#pdf_builder-header"
+					data-target="#pdf_builder-header + .scaffold-first-row"
 				><span class="px-2 mx-1"><?php echo $rowType; ?></span></a><?php
 			endforeach; // foreach-type
 		?></div><?php

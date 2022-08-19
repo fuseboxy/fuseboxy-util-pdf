@@ -30,7 +30,7 @@ $tabLayout = array(
 		'linkClass' => !empty($docItem->disabled) ? 'text-muted' : false,
 	], ORM::get('pdfdoc', 'ORDER BY alias, id ')), array([
 		'name' => '+ New Doc',
-		'url' => F::url("{$fusebox->controller}.doc-new"),
+		'url' => F::url("{$fusebox->controller}.doc_new"),
 		'linkClass' => 'font-italic text-muted',
 		'linkAttr' => array(
 			'data-toggle' => 'ajax-modal',
