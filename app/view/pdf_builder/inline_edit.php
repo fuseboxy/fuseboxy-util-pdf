@@ -11,7 +11,7 @@ $doc->find('.col-bold,.col-italic,.col-underline')->find('.form-group')->removeC
 
 
 // adjust field size
-$doc->find('.col-align,.col-size,.col-color')->find('.input-group')->removeClass('input-group-sm')->addClass('input-group-xs');
+$doc->find('.col-align,.col-size,.col-color,.col-height,.col-width')->find('.input-group')->removeClass('input-group-sm')->addClass('input-group-xs');
 
 
 // button column width
