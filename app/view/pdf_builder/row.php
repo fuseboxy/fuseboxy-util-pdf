@@ -28,6 +28,7 @@ $doc->find('td.col-value')->addClass('bx-1 by-0 b-dark px-5')->html($rowOutput);
 
 // row type
 $doc->find('div.col-type')->addClass('badge badge-light b-1 text-uppercase ml-1');
+if ( $bean->type == 'br' ) $doc->find('div.col-type')->after('<small class="text-muted">('.$bean->value.')');
 
 
 
