@@ -12,7 +12,7 @@ $scaffold = array_merge([
 	'beanType' => 'pdfdoc',
 	'editMode' => 'inline',
 	'allowDelete' => Auth::userInRole('SUPER'),
-	'layoutPath' => dirname(__DIR__).('/view/pdf_doc/layout.php'),
+	'layoutPath' => F::appPath('view/pdf_doc/layout.php'),
 	'listOrder' => 'ORDER BY alias ',
 	'listField' => array(
 		'id' => '60',
@@ -21,11 +21,11 @@ $scaffold = array_merge([
 	),
 	'fieldConfig' => array(
 		'alias' => array('required' => true),
-		'title' => array('placeholder' => true),
+		'title' => array('placeholder' => true, 'required' => true),
 		'remark' => array('format' => 'textarea', 'style' => 'height: 5rem', 'placeholder' => true),
 	),
 	'scriptPath' => array(
-		'row' => dirname(__DIR__).('/view/pdf_doc/row.php'),
+		'row' => F::appPath('view/pdf_doc/row.php'),
 	),
 	'writeLog' => class_exists('Log'),
 ], $pdfDocScaffold ?? $pdf_doc_scaffold ?? []);

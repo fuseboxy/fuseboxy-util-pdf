@@ -12,11 +12,6 @@
 	</io>
 </fusedoc>
 */
-// display PDF doc info
-include 'doc.view.php';
-echo '<br />';
-
-
 // capture original output
 ob_start();
 include F::appPath('view/scaffold/header.php');
@@ -42,7 +37,7 @@ if ( isset($xfa['new']) ) :
 					data-toggle="ajax-load"
 					data-mode="after"
 					data-overlay="none"
-					data-target="#pdf_builder-header + .scaffold-first-row"
+					data-target="#pdf_row-header + .scaffold-first-row"
 				><span class="px-2 mx-1"><?php echo $rowType; ?></span></a><?php
 			endforeach; // foreach-type
 		?></div><?php
