@@ -81,7 +81,7 @@ switch ( $fusebox->action ) :
 			] : ( in_array($arguments['rowType'], ['img']) ? [
 				'align|height|width' => '160',
 			] : [])), [
-				'~empty~|type',
+				'__empty__|type',
 			]),
 			'fieldConfig' => array_merge([
 				'seq' => array('format' => 'number', 'label' => '<i class="fa fa-sort-amount-down-alt"></i>', 'default' => 0),
@@ -106,7 +106,6 @@ switch ( $fusebox->action ) :
 							<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
 						</div>
 					',
-					'value' => '  ',
 				] : ( in_array($arguments['rowType'], ['img']) ? [
 
 				] : ( in_array($arguments['rowType'], ['br']) ? [
@@ -165,7 +164,7 @@ switch ( $fusebox->action ) :
 					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">WIDTH</b>',
 				),
 'url',
-				'~empty~' => array(
+				'__empty__' => array(
 					'label' => false,
 					'format' => 'output',
 				),
