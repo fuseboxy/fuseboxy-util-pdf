@@ -3,6 +3,10 @@ F::redirect('auth&callback='.base64_encode($_SERVER['REQUEST_URI']), !Auth::user
 F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 
 
+// extra button
+$xfa['editLayout'] = 'pdf_row';
+
+
 // config
 $scaffold = array_merge([
 	'beanType' => 'pdfdoc',
