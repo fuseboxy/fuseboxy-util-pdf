@@ -3,7 +3,8 @@ F::redirect('auth&callback='.base64_encode($_SERVER['REQUEST_URI']), !Auth::user
 F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 
 
-// extra button
+// extra buttons
+$xfa['preview'] = "{$fusebox->controller}.preview";
 $xfa['editLayout'] = 'pdf_row';
 
 
