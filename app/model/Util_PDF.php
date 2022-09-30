@@ -406,7 +406,7 @@ class Util_PDF {
 		<io>
 			<in>
 				<array name="$fileData" comments="please refer to {array2html}" />
-				<string name="$filePath" optional="yes" comments="please refer to {html2pdf}" />
+				<string name="$filePath" optional="yes" default="~null~" comments="please refer to {html2pdf}" />
 				<structure name="$pageOptions" optional="yes" comments="please refer to {html2pdf}" />
 			</in>
 			<out>
@@ -421,7 +421,7 @@ class Util_PDF {
 		</io>
 	</fusedoc>
 	*/
-	public static function array2pdf($fileData, $filePath='', $pageOptions=[]) {
+	public static function array2pdf($fileData, $filePath=null, $pageOptions=[]) {
 		$html = self::array2html($fileData);
 		if ( $html === false ) return false;
 		return self::html2pdf($html, $filePath, $pageOptions);
@@ -439,7 +439,7 @@ class Util_PDF {
 			<in>
 				<!-- parameters -->
 				<string name="$html" />
-				<string name="$filePath" optional="yes" comments="relative path to upload directory" />
+				<string name="$filePath" optional="yes" default="~null~" comments="relative path to upload directory; use {false} or {null} to display pdf directly" />
 				<!-- page options -->
 				<structure name="$pageOptions" optional="yes">
 					<string name="paperSize" default="A4" value="A3|A4|A5|~array(width,height)~">
@@ -486,7 +486,7 @@ class Util_PDF {
 		// write output to file
 		$pdf->WriteHTML($html);
 		// view as PDF directly (when file path not specified)
-		if ( empty($filePath) ) exit($pdf->Output());
+		if ( $filePath === null or $filePath === false ) exit($pdf->Output());
 		// determine output location
 		$result = array('path' => Util::uploadDir($filePath), 'url'  => Util::uploadUrl($filePath));
 		if ( $result['path'] === false or $result['url'] === false ) {
