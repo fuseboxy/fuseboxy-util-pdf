@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `pdfdoc` (
   PRIMARY KEY (`id`),
   KEY `alias` (`alias`),
   KEY `disabled` (`disabled`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE IF NOT EXISTS `pdfrow` (
@@ -30,4 +30,4 @@ CREATE TABLE IF NOT EXISTS `pdfrow` (
   KEY `pdfdoc_id` (`pdfdoc_id`),
   KEY `type` (`type`),
   KEY `disabled` (`disabled`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
