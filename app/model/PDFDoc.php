@@ -12,80 +12,6 @@ class PDFDoc {
 	/**
 	<fusedoc>
 		<description>
-			delete specific pdf-doc record & write log
-		</description>
-		<io>
-			<in>
-				<mixed name="$docID" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function delete($docID) {
-		// load record
-		$bean = self::load($docID);
-		if ( $bean === false ) return false;
-		// proceed to delete
-		$deleted = ORM::delete($bean);
-		if ( $deleted === false ) {
-			self::$error = '[PDFDoc::delete] '.ORM::error();
-			return false;
-		}
-		// write log
-/*
-
-
-		if ( $logged === false ) {
-			self::$error = '[PDFDoc::delete] Error writing log ('.Log::error().')';
-			return false;
-		}
-*/
-		// done!
-		return true;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			load first pdf-doc
-		</description>
-		<io>
-			<in>
-				<string name="$field" optional="yes" />
-			</in>
-			<out>
-				<object name="~return~" type="pdfdoc" optional="yes" oncondition="when {field} not specified" />
-				<mixed name="~return~" optional="yes" oncondition="when {field} specified" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function first($field=null) {
-		// load record
-		$bean = ORM::first('pdfdoc', 'ORDER BY alias, id ');
-		if ( $bean === false ) {
-			self::$error = '[PDFDoc::first] Error loading record ('.ORM::error().')';
-			return false;
-		} elseif ( empty($bean->id) ) {
-			self::$error = '[PDFDoc::first] Record not found';
-			return false;
-		}
-		// done!
-		return empty($field) ? $bean : ( $bean->{$field} ?? null );
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
 			load specific pdf-doc record (when necessary)
 		</description>
 		<io>
@@ -144,7 +70,7 @@ class PDFDoc {
 		</description>
 		<io>
 			<in>
-				<mixed name="$docID" />
+				<mixed name="$doc" comments="id|alias|object" />
 				<string name="format" optional="yes" default="pdf" comments="pdf|html" />
 			</in>
 			<out>
@@ -156,7 +82,7 @@ class PDFDoc {
 		</io>
 	</fusedoc>
 	*/
-	public static function render($docID, $format='pdf') {
+	public static function render($doc, $format='pdf') {
 		$format = strtolower($format);
 		// validation
 		if ( !in_array($format, ['pdf','html']) ) {
@@ -164,7 +90,7 @@ class PDFDoc {
 			return false;
 		}
 		// load record
-		$bean = self::load($docID);
+		$bean = self::load($doc);
 		if ( $bean === false ) return false;
 		// get related rows
 		$beanRows = ORM::get('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ORDER BY IFNULL(seq, 9999) ', array($bean->id));
@@ -192,68 +118,6 @@ class PDFDoc {
 	}
 	// alias method
 	public static function renderHtml($doc) { return self::render($doc, 'html'); }
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			save pdf-doc record & write log
-		</description>
-		<io>
-			<in>
-				<structure name="$data">
-					<number name="id" />
-					<string name="alias" />
-					<string name="title" />
-					<string name="body" />
-					<boolean name="disabled" />
-				</structure>
-			</in>
-			<out>
-				<number name="~return~" value="~lastInsertID~|~updateRecordID~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function save($data) {
-		// load record, or...
-		if ( !empty($data['id']) ) {
-			$bean = self::load($data['id']);
-			if ( $bean === false ) return false;
-		// create empty container
-		} else {
-			$bean = ORM::new('pdfdoc');
-			if ( $bean === false ) {
-				self::$error = '[PDFDoc::save] Error creating container ('.ORM::error().')';
-				return false;
-			}
-		}
-		// modify record data
-		foreach ( $data as $fieldName => $fieldValue ) $bean->{$fieldName} = $fieldValue;
-		// proceed to save
-		$result = ORM::save($bean);
-		if ( $result === false ) {
-			self::$error = '[PDFDoc::save] Error saving record ('.ORM::error().')';
-			return false;
-		}
-		// write log
-/*
-		$logged = Log::write([
-			'action'      => empty($arguments['docID']) ? 'CREATE_PDFDOC' : 'UPDATE_PDFDOC'
-			'entity_type' => 'pdfdoc',
-			'entity_id'   => $arguments['data']['id'],
-			'remark' => !empty($arguments['data']['id']) ? Bean::diff($beanBeforeSave, $bean) : Bean::toString($bean),
-		]);
-		if ( $logged === false ) {
-			self::$error = '[PDFDoc::save] Error writing log ('.Log::error().')';
-			return false;
-		}
-*/
-		// done!
-		return $result;
-	}
 
 
 } // class
