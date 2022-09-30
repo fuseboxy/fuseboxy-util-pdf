@@ -29,7 +29,7 @@ if ( isset($xfa['editLayout']) ) :
 		href="<?php echo F::url($xfa['editLayout'].'&docID='.$bean->id); ?>"
 		class="btn btn-xs btn-primary"
 		data-toggle="ajax-modal"
-		data-target="#global-modal-xl"
+		data-target="#global-modal-xxl"
 	><i class="fa fa-file-pdf"></i> PDF Layout</a> <?php
 endif;
 // preview button

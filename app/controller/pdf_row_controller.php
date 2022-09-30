@@ -29,7 +29,7 @@ switch ( $fusebox->action ) :
 			'listFilter' => array('pdfdoc_id = ? ', array($arguments['docID'])),
 			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
 			'listField' => array_merge([
-				'seq|id|pdfdoc_id' => '80',
+				'seq|id|pdfdoc_id' => '100',
 				'value' => '60%',
 			], in_array($arguments['rowType'], ['div','p','ul','ol']) ? [
 				'align|size|color' => '160',
