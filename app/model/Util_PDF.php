@@ -151,7 +151,7 @@ class Util_PDF {
 		if ( !empty($item['color'])     ) $output .= 'color:'.$item['color'].';';
 		if ( !empty($item['align'])     ) $output .= 'text-align:'.$item['align'].';';
 		// (close tag)
-		$output .= '">'.( $item['value'] ?? '' ).'</div>';
+		$output .= '">'.( nl2br($item['value']) ?? '' ).'</div>';
 		// done!
 		return $output;
 	}
