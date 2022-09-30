@@ -298,7 +298,7 @@ class Util_PDF {
 	private static function array2html__list($item) {
 		// fix param
 		$item['value'] = $item['value'] ?? $item['list'] ?? [];
-		if ( is_string($item['value']) ) $item['value'] = array($item['value']);
+		if ( is_string($item['value']) ) $item['value'] = explode("\n", $item['value']);
 		// render list
 		$item['value'] = '<'.$item['type'].call_user_func(function() use ($item){
 			if ( isset($item['indent']) ) return ' style="margin-left:'.$item['indent'].( is_numeric($item['indent']) ? 'pt' : '' ).';"';
