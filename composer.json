@@ -7,5 +7,5 @@
 		"fuseboxy/fuseboxy-installer": "2.2.x",
 		"mpdf/mpdf" : "^8.1"
 	},
-	"autoload": { "files": [ "app/model/Util_PDF.php" ] }
+	"autoload": { "files": [ "app/model/PDFDoc.php", "app/model/Util_PDF.php" ] }
 }
