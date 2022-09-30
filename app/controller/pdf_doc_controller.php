@@ -10,7 +10,8 @@ switch ( $fusebox->action ) :
 	// view as pdf
 	case 'preview':
 		F::error('Argument [docID] is required', empty($arguments['docID']));
-var_dump($arguments);
+		$rendered = PDFDoc::render($arguments['docID']);
+		F::error(PDFDoc::error(), $rendered === false);
 		break;
 
 
