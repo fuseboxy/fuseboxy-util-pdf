@@ -31,13 +31,17 @@ $doc = Util::phpQuery(ob_get_clean());
 
 
 // preview row value
-$doc->find('td.col-value')->html(( $bean->type == 'pagebreak' ) ? '
+$doc->find('div.col-value')->html(( $bean->type == 'pagebreak' ) ? '
 	<div class="row op-60">
 		<div class="col pr-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
 		<div class="col-1 p-0 text-center text-muted small" style="line-height: 1.75rem;"><b>PAGEBREAK</b></div>
 		<div class="col pl-0"><hr class="b-secondary" style="border-style: dashed;" /></div>
 	</div>
 ' : Util_PDF::array2html([ $bean->export() ]));
+
+
+// add paper border
+$doc->find('td.col-value')->addClass('bx-1 by-0 b-dark px-5');
 
 
 // row type
