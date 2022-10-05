@@ -19,6 +19,10 @@ ob_start();
 $doc->find('.scaffold-header')->after(ob_get_clean());
 
 
+// content rows
+$doc->find('td.col-value')->addClass('bx-1 by-0 b-dark px-5');
+
+
 // last row
 ob_start();
 ?><table class="table table-hover table-sm mb-0 scaffold-last-row">
@@ -31,6 +35,7 @@ ob_start();
 	</tbody>
 </table><?php
 $doc->find('.scaffold-list')->append(ob_get_clean());
+
 
 // done!
 echo $doc;
