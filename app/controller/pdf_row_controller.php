@@ -32,17 +32,21 @@ switch ( $fusebox->action ) :
 			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
 			'listField' => array_merge([
 				'seq|id|pdfdoc_id' => '100',
-				'value' => '60%',
 			], in_array($arguments['rowType'], ['div','p','ul','ol']) ? [
+				'value|url' => '60%',
 				'align|size|color' => '160',
 				'bold|italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['small','h1','h2','h3','h4','h5','h6']) ? [
+				'value|url' => '60%',
 				'align|color' => '160',
 				'bold|italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['img']) ? [
+				'value|url' => '60%',
 				'align|height|width' => '160',
-			] : [])), [
-				'__empty__|type',
+			] : [
+				'value' => '60%',
+			])), [
+				'_empty_|type',
 			]),
 			'fieldConfig' => array_merge([
 				'seq' => array('format' => 'number', 'label' => '<i class="fa fa-sort-amount-down-alt"></i>', 'default' => 0),
@@ -126,8 +130,13 @@ switch ( $fusebox->action ) :
 					'label' => false,
 					'inline-label' => '<b class="d-inline-block text-center text-muted" style="width: 35px;">WIDTH</b>',
 				),
-'url',
-				'__empty__' => array(
+				'url' => array(
+					'label' => false,
+					'format' => 'url',
+					'icon' => 'fa fa-link',
+					'placeholder' => 'http://',
+				),
+				'_empty_' => array(
 					'label' => false,
 					'format' => 'output',
 				),
