@@ -40,16 +40,20 @@ switch ( $fusebox->action ) :
 				'value' => '60%',
 				'align|size|color' => '160',
 				'bold|italic|underline' => '120',
-			] : ( in_array($arguments['rowType'], ['small','h1','h2','h3','h4','h5','h6']) ? [
+			] : ( in_array($arguments['rowType'], ['small']) ? [
 				'value|url' => '60%',
 				'align|color' => '160',
 				'bold|italic|underline' => '120',
+			] : ( in_array($arguments['rowType'], ['h1','h2','h3','h4','h5','h6']) ? [
+				'value|url' => '60%',
+				'align|color' => '160',
+				'italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['img']) ? [
 				'value|url' => '60%',
 				'align|height|width' => '160',
 			] : [
 				'value' => '60%',
-			]))), [
+			])))), [
 				'_empty_|type',
 			]),
 			'fieldConfig' => array_merge([
