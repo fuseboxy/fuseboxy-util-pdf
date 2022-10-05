@@ -35,9 +35,9 @@ if ( isset($xfa['new']) ) :
 					href="<?php echo F::url($xfa['new'].'&rowType='.$rowType); ?>"
 					class="btn btn-xs btn-light b-1"
 					data-toggle="ajax-load"
-					data-mode="after"
+					data-mode="before"
 					data-overlay="none"
-					data-target="#pdf_row-header + .scaffold-first-row"
+					data-target=".scaffold-list > .scaffold-last-row"
 				><span class="px-2 mx-1"><?php echo $rowType; ?></span></a><?php
 			endforeach; // foreach-type
 		?></div><?php
