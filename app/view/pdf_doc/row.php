@@ -15,6 +15,11 @@
 	</io>
 </fusedoc>
 */
+// related rows
+$rowCount = ORM::get('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ', array($bean->id));
+F::error(ORM::error(), $rowCount === false);
+
+
 // capture original output
 ob_start();
 include F::appPath('view/scaffold/row.php');
@@ -29,7 +34,11 @@ if ( isset($xfa['editLayout']) ) :
 		class="btn btn-xs btn-primary"
 		data-toggle="ajax-modal"
 		data-target="#global-modal-xxl"
-	><i class="fa fa-file-pdf"></i> PDF Layout</a> <?php
+	><i class="fa fa-file-pdf"></i> PDF Layout <?php
+		if ( $rowCount ) :
+			?><small>(<?php echo $rowCount; ?>)</small><?php
+		endif;
+	?></a> <?php
 	$doc->find('.scaffold-btn-edit')->before(ob_get_clean());
 endif;
 
