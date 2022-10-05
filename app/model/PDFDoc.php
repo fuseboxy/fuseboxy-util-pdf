@@ -93,7 +93,7 @@ class PDFDoc {
 		$bean = self::load($doc);
 		if ( $bean === false ) return false;
 		// get related rows
-		$beanRows = ORM::get('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ORDER BY IFNULL(seq, 9999) ', array($bean->id));
+		$beanRows = ORM::get('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ORDER BY IFNULL(seq, 9999), id ', array($bean->id));
 		if ( $beanRows === false ) {
 			self::$error = "[PDFDoc::render] Error loading PDF rows (docID={$bean->id})";
 			return false;
