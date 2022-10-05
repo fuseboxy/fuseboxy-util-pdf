@@ -8,7 +8,6 @@
 			<number name="docID" scope="$arguments" />
 		</in>
 		<out>
-			<number name="docID" scope="url" oncondition="xfa.preview" />
 			<structure name="$modalLayout" comments="for modal layout">
 				<string name="title" />
 				<string name="footer" comments="show preview button" />
@@ -34,8 +33,8 @@ if ( isset($xfa['preview']) ) :
 	$modalLayout['footer'] = Util::phpQuery($modalLayout['footer']);
 	ob_start();
 	?><a 
-		href="<?php echo F::url($xfa['preview'].'&docID='.$bean->id); ?>"
-		class="btn btn-light b-1 btn-preview"
+		href="<?php echo F::url($xfa['preview']); ?>"
+		class="btn btn-primary btn-preview"
 		target="_blank"
 	><i class="fa fa-search"></i> Preview</a> <?php
 	$modalLayout['footer']->find('.btn-close')->after(ob_get_clean())->remove();
