@@ -44,8 +44,7 @@ class Util_PDF {
 						<number name="repeat" optional="yes" default="1" oncondition="br" />
 						<number name="height" optional="yes" oncondition="img" />
 						<number name="width" optional="yes" oncondition="img" />
-						<string name="bullet" optional="yes" oncondition="ol|ul" />
-						<number name="indent" optional="yes" />
+						<number name="indent" optional="yes" oncondition="ol|ul" />
 						<string name="url" optional="yes" />
 					</structure>
 				</array>
@@ -80,8 +79,6 @@ class Util_PDF {
 			// render item as corresponding type
 			$itemResult = self::$renderMethod($item);
 			if ( $itemResult === false ) return false;
-			// wrap by link (when necessary)
-			if ( !empty($item['url']) ) $itemResult = '<a href="'.$item['url'].'" target="_blank">'.$itemResult.'</a>';
 			// append to result
 			return $itemResult;
 		}, $data);
@@ -133,8 +130,7 @@ class Util_PDF {
 					<boolean name="underline" optional="yes" default="false" />
 					<number name="size" optional="yes" default="~pageOptions[fontSize]~" />
 					<string name="color" optional="yes" />
-					<number name="indent" optional="yes" />
-					<string name="indentText" optional="yes" />
+					<string name="url" optional="yes" />
 				</structure>
 			</in>
 			<out>
@@ -144,6 +140,7 @@ class Util_PDF {
 	</fusedoc>
 	*/
 	private static function array2html__div($item) {
+		// open tag
 		$output = '<div style="';
 		if ( !empty($item['size'])      ) $output .= 'font-size:'.$item['size'].( is_numeric($item['size']) ? 'pt' : '' ).';';
 		if ( !empty($item['bold'])      ) $output .= 'font-weight:bold;';
@@ -151,8 +148,12 @@ class Util_PDF {
 		if ( !empty($item['underline']) ) $output .= 'text-decoration:underline;';
 		if ( !empty($item['color'])     ) $output .= 'color:'.$item['color'].';';
 		if ( !empty($item['align'])     ) $output .= 'text-align:'.$item['align'].';';
-		// (close tag)
-		$output .= '">'.( nl2br($item['value']) ?? '' ).'</div>';
+		// content
+		$content = nl2br($item['value']) ?? '';
+		// wrap by link (when necessary)
+		if ( !empty($item['url']) ) $content = '<a href="'.$item['url'].'" target="_blank">'.$content.'</a>';
+		// close tag
+		$output .= '">'.$content.'</div>';
 		// done!
 		return $output;
 	}
@@ -173,6 +174,7 @@ class Util_PDF {
 					<string name="align" optional="yes" comments="L|C|R" />
 					<number name="height" optional="yes" />
 					<number name="width" optional="yes" />
+					<string name="url" optional="yes" />
 				</structure>
 			</in>
 			<out>
@@ -182,6 +184,7 @@ class Util_PDF {
 	</fusedoc>
 	*/
 	private static function array2html__img($item) {
+		// open tag
 		$output = '<img src="'.( $item['src'] ?? $item['value'] ?? '' ).'"';
 		// height & width
 		if ( !empty($item['height']) or !empty($item['width']) ) {
@@ -190,8 +193,10 @@ class Util_PDF {
 			if ( !empty($item['width']) ) $output .= 'width:'.$item['width'].( is_numeric($item['width']) ? 'pt' : '' ).';';
 			$output .= '"';
 		}
-		// (close image tag)
+		// close tag
 		$output .= '/>';
+		// wrap by link (when necessary)
+		if ( !empty($item['url']) ) $content = '<a href="'.$item['url'].'" target="_blank">'.$output.'</a>';
 		// alignment
 		if ( isset($item['align']) ) $output = '<div style="text-align:'.call_user_func(function() use ($item){
 			if ( $item['align'] == 'L' ) return 'left';
@@ -222,6 +227,7 @@ class Util_PDF {
 					<boolean name="italic" optional="yes" default="false" />
 					<boolean name="underline" optional="yes" default="false" />
 					<string name="color" optional="yes" />
+					<string name="url" optional="yes" />
 				</structure>
 			</in>
 			<out>
@@ -231,8 +237,14 @@ class Util_PDF {
 	</fusedoc>
 	*/
 	private static function array2html__heading($item) {
+		$content = $item['value'];
+		// wrap by link (when necessary)
+		if ( !empty($item['url']) ) $content = '<a href="'.$item['url'].'" target="_blank">'.$content.'</a>';
+		// adjust item for [div] wrapping
 		$item['bold'] = true;
-		$item['value'] = "<{$item['type']}>{$item['value']}</{$item['type']}>";
+		$item['value'] = "<{$item['type']}>{$content}</{$item['type']}>";
+		if ( isset($item['url']) ) unset($item['url']);
+		// wrap by [div] for styling & alignment
 		return self::array2html__div($item);
 	}
 	// alias method
@@ -331,6 +343,7 @@ class Util_PDF {
 					<boolean name="underline" optional="yes" default="false" />
 					<number name="size" optional="yes" default="~pageOptions[fontSize]~" />
 					<string name="color" optional="yes" />
+					<string name="url" optional="yes" />
 				</structure>
 			</in>
 			<out>
@@ -340,7 +353,13 @@ class Util_PDF {
 	</fusedoc>
 	*/
 	private static function array2html__p($item) {
-		$item['value'] = '<p>'.$item['value'].'</p>';
+		$content = $item['value'];
+		// wrap by link (when necessary)
+		if ( !empty($item['url']) ) $content = '<a href="'.$item['url'].'" target="_blank">'.$content.'</a>';
+		// adjust item for [div] wrapping
+		$item['value'] = '<p>'.$content.'</p>';
+		if ( isset($item['url']) ) unset($item['url']);
+		// wrap by [div] for styling & alignment
 		return self::array2html__div($item);
 	}
 
@@ -392,7 +411,13 @@ class Util_PDF {
 	</fusedoc>
 	*/
 	private static function array2html__small($item) {
-		$item['value'] = '<small>'.$item['value'].'</small>';
+		$content = $item['value'];
+		// wrap by link (when necessary)
+		if ( !empty($item['url']) ) $content = '<a href="'.$item['url'].'" target="_blank">'.$content.'</a>';
+		// adjust item for [div] wrapping
+		$item['value'] = '<small>'.$content.'</small>';
+		if ( isset($item['url']) ) unset($item['url']);
+		// wrap by [div] for styling & alignment
 		return self::array2html__div($item);
 	}
 
