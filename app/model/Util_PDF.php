@@ -185,27 +185,23 @@ class Util_PDF {
 	*/
 	private static function array2html__img($item) {
 		// open tag
-		$output = '<img src="'.( $item['src'] ?? $item['value'] ?? '' ).'"';
+		$content = '<img src="'.( $item['src'] ?? $item['value'] ?? '' ).'"';
 		// height & width
 		if ( !empty($item['height']) or !empty($item['width']) ) {
-			$output .= ' style="';
-			if ( !empty($item['height']) ) $output .= 'height:'.$item['height'].( is_numeric($item['height']) ? 'pt' : '' ).';';
-			if ( !empty($item['width']) ) $output .= 'width:'.$item['width'].( is_numeric($item['width']) ? 'pt' : '' ).';';
-			$output .= '"';
+			$content .= ' style="';
+			if ( !empty($item['height']) ) $content .= 'height:'.$item['height'].( is_numeric($item['height']) ? 'pt' : '' ).';';
+			if ( !empty($item['width']) ) $content .= 'width:'.$item['width'].( is_numeric($item['width']) ? 'pt' : '' ).';';
+			$content .= '"';
 		}
 		// close tag
-		$output .= '/>';
+		$content .= '/>';
 		// wrap by link (when necessary)
-		if ( !empty($item['url']) ) $content = '<a href="'.$item['url'].'" target="_blank">'.$output.'</a>';
-		// alignment
-		if ( isset($item['align']) ) $output = '<div style="text-align:'.call_user_func(function() use ($item){
-			if ( $item['align'] == 'L' ) return 'left';
-			if ( $item['align'] == 'C' ) return 'center';
-			if ( $item['align'] == 'R' ) return 'right';
-			return $item['align'];
-		}).';">'.$output.'</div>';
-		// done!
-		return $output;
+		if ( !empty($item['url']) ) $content = '<a href="'.$item['url'].'" target="_blank">'.$content.'</a>';
+		// adjust item for [div] wrapping
+		$item['value'] = $content;
+		if ( isset($item['url']) ) unset($item['url']);
+		// wrap by [div] for styling & alignment
+		return self::array2html__div($item);
 	}
 	// alias method
 	private static function array2html__image($item) { return self::array2html__img($item); }
