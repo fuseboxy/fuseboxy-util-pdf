@@ -85,6 +85,7 @@ switch ( $fusebox->action ) :
 					'format' => 'image',
 					'filetype' => 'gif,jpeg,jpg,png',
 					'filesize' => '2MB',
+					'required' => true,
 				] : ( in_array($arguments['rowType'], ['br']) ? [
 					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
 					'format' => 'dropdown',
@@ -144,7 +145,7 @@ switch ( $fusebox->action ) :
 					'label' => false,
 					'format' => 'url',
 					'icon' => 'fa fa-link',
-					'placeholder' => 'http://',
+					'placeholder' => 'https://',
 				),
 				'_empty_' => array(
 					'label' => false,
