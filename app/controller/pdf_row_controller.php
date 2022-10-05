@@ -32,8 +32,12 @@ switch ( $fusebox->action ) :
 			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
 			'listField' => array_merge([
 				'seq|id|pdfdoc_id' => '100',
-			], in_array($arguments['rowType'], ['div','p','ul','ol']) ? [
+			], in_array($arguments['rowType'], ['div','p']) ? [
 				'value|url' => '60%',
+				'align|size|color' => '160',
+				'bold|italic|underline' => '120',
+			], in_array($arguments['rowType'], ['ul','ol']) ? [
+				'value' => '60%',
 				'align|size|color' => '160',
 				'bold|italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['small','h1','h2','h3','h4','h5','h6']) ? [
