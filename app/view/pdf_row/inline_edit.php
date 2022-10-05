@@ -15,9 +15,9 @@ $doc->find('div.col-align,div.col-size,div.col-color,div.col-height,div.col-widt
 $doc->find('td.col-button')->attr('width', 220);
 
 // add border
-$doc->find('td.col-value')->addClass('bx-1 by-0 b-dark px-5');
-$doc->find('td.col-value')->prev()->addClass('pr-2');
-$doc->find('td.col-value')->next()->addClass('pl-2');
+$doc->find('td.col-value,td.col-value-url')->addClass('bx-1 by-0 b-dark px-5');
+$doc->find('td.col-value,td.col-value-url')->prev()->addClass('pr-2');
+$doc->find('td.col-value,td.col-value-url')->next()->addClass('pl-2');
 
 // done!
 echo $doc;
