@@ -19,6 +19,8 @@ switch ( $fusebox->action ) :
 	// crud operations for PDF row
 	default:
 		$arguments['rowType'] = $arguments['rowType'] ?? '';
+		// force [rowType=img] when upload
+		if ( F::is('*.upload_file') ) $arguments['rowType'] = 'img';
 		// config
 		$scaffold = array(
 			'beanType' => 'pdfrow',
