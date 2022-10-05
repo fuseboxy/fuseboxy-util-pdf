@@ -16,7 +16,7 @@
 </fusedoc>
 */
 // related rows
-$rowCount = ORM::get('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ', array($bean->id));
+$rowCount = ORM::count('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ', array($bean->id));
 F::error(ORM::error(), $rowCount === false);
 
 
