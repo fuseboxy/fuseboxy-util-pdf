@@ -23,11 +23,15 @@ F::error(ORM::error(), $pdfDoc === false);
 $modalLayout['title'] = $layout['title'] = '<i class="fa fa-file-pdf text-danger fa-lg mr-1"></i> '.$pdfDoc->title;
 
 
-// preview button @ modal footer
+// modal footer
 ob_start();
 include F::appPath('view/modal/layout.footer.php');
 $modalLayout['footer'] = ob_get_clean();
+
+
+// preview button
 if ( isset($xfa['preview']) ) :
+	$modalLayout['footer'] = Util::phpQuery($modalLayout['footer']);
 	ob_start();
 	?><a 
 		href="<?php echo F::url($xfa['preview'].'&docID='.$bean->id); ?>"
