@@ -57,9 +57,8 @@ class Util_PDF {
 	</fusedoc>
 	*/
 	public static function array2html($data) {
-		$result = '';
-		// go through each item
-		foreach ( $data as $item ) {
+		// convert each item to html
+		$result = array_map(function($item){
 			// fix : type
 			if ( !isset($item['type']) ) $item['type'] = 'div';
 			else $item['type'] = strtolower($item['type']);
@@ -81,11 +80,13 @@ class Util_PDF {
 			// render item as corresponding type
 			$itemResult = self::$renderMethod($item);
 			if ( $itemResult === false ) return false;
+			// wrap by link (when necessary)
+			if ( !empty($item['url']) ) $itemResult = '<a href="'.$item['url'].'" target="_blank">'.$itemResult.'</a>';
 			// append to result
-			$result .= $itemResult;
-		}
+			return $itemResult;
+		}, $data);
 		// done!
-		return $result;
+		return implode('', $result);
 	}
 
 
