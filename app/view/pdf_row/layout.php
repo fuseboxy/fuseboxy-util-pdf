@@ -2,11 +2,16 @@
 <fusedoc>
 	<io>
 		<in>
+			<structure name="$xfa">
+				<string name="preview" />
+			</structure>
 			<number name="docID" scope="$arguments" />
 		</in>
 		<out>
-			<structure name="$modalLayout" comments="pass to {view/modal/layout.php}">
+			<number name="docID" scope="url" oncondition="xfa.preview" />
+			<structure name="$modalLayout" comments="for modal layout">
 				<string name="title" />
+				<string name="footer" comments="show preview button" />
 			</structure>
 		</out>
 	</io>
@@ -17,5 +22,22 @@ $pdfDoc = ORM::get('pdfdoc', $arguments['docID']);
 F::error(ORM::error(), $pdfDoc === false);
 $modalLayout['title'] = $layout['title'] = '<i class="fa fa-file-pdf text-danger fa-lg mr-1"></i> '.$pdfDoc->title;
 
+
+// preview button @ modal footer
+ob_start();
+include F::appPath('view/modal/layout.footer.php');
+$modalLayout['footer'] = ob_get_clean();
+if ( isset($xfa['preview']) ) :
+	ob_start();
+	?><a 
+		href="<?php echo F::url($xfa['preview'].'&docID='.$bean->id); ?>"
+		class="btn btn-light b-1 btn-preview"
+		target="_blank"
+	><i class="fa fa-search"></i> Preview</a> <?php
+	$modalLayout['footer']->find('.btn-close')->after(ob_get_clean())->remove();
+endif;
+
+
 // display in modal (when necessary)
-include F::appPath( F::ajaxRequest() ? 'view/modal/layout.php' : 'view/global/layout.php' );
+if ( F::ajaxRequest() ) include F::appPath('view/modal/layout.php');
+else include F::appPath('view/global/layout.php');

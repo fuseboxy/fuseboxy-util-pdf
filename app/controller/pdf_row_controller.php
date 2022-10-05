@@ -21,6 +21,8 @@ switch ( $fusebox->action ) :
 		$arguments['rowType'] = $arguments['rowType'] ?? '';
 		// force [rowType=img] when upload
 		if ( F::is('*.upload_file') ) $arguments['rowType'] = 'img';
+		// extra button
+		$xfa['preview'] = "{$fusebox->controller}.preview";
 		// config
 		$scaffold = array(
 			'beanType' => 'pdfrow',

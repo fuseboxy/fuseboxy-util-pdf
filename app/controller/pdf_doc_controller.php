@@ -17,8 +17,7 @@ switch ( $fusebox->action ) :
 
 	// crud operations
 	default:
-		// extra buttons
-		$xfa['preview'] = "{$fusebox->controller}.preview";
+		// extra button
 		$xfa['editLayout'] = 'pdf_row';
 		// config
 		$scaffold = array_merge([
