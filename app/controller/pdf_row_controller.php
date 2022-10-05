@@ -31,23 +31,19 @@ switch ( $fusebox->action ) :
 			'allowDelete' => Auth::userInRole('SUPER'),
 			'layoutPath' => F::appPath('view/pdf_row/layout.php'),
 			'listFilter' => array('pdfdoc_id = ? ', array($arguments['docID'])),
-			'listOrder' => 'ORDER BY IFNULL(seq, 9999) ASC ',
+			'listOrder' => 'ORDER BY IFNULL(seq, 9999), id ',
 			'listField' => array_merge([
 				'seq|id|pdfdoc_id' => '100',
-			], in_array($arguments['rowType'], ['div','p']) ? [
-				'value|url' => '60%',
-				'align|size|color' => '160',
-				'bold|italic|underline' => '120',
-			] : ( in_array($arguments['rowType'], ['ul','ol']) ? [
+			], in_array($arguments['rowType'], ['div','p','ul','ol']) ? [
 				'value' => '60%',
 				'align|size|color' => '160',
 				'bold|italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['small']) ? [
-				'value|url' => '60%',
+				'value' => '60%',
 				'align|color' => '160',
 				'bold|italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['h1','h2','h3','h4','h5','h6']) ? [
-				'value|url' => '60%',
+				'value' => '60%',
 				'align|color' => '160',
 				'italic|underline' => '120',
 			] : ( in_array($arguments['rowType'], ['img']) ? [
@@ -55,7 +51,7 @@ switch ( $fusebox->action ) :
 				'align|height|width' => '160',
 			] : [
 				'value' => '60%',
-			])))), [
+			]))), [
 				'_empty_|type',
 			]),
 			'fieldConfig' => array_merge([
