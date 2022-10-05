@@ -66,7 +66,9 @@ switch ( $fusebox->action ) :
 						</div>
 					',
 				] : ( in_array($arguments['rowType'], ['img']) ? [
-
+					'format' => 'image',
+					'filetype' => 'gif,jpeg,jpg,png',
+					'filesize' => '2MB',
 				] : ( in_array($arguments['rowType'], ['br']) ? [
 					'inline-label' => '<strong class="d-inline-block" style="width: 50px;">'.strtoupper($arguments['rowType']).'</strong>',
 					'format' => 'dropdown',
