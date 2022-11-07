@@ -1,6 +1,6 @@
 {
 	"name": "fuseboxy/fuseboxy-util-pdf",
-	"description": "Fuseboxy PDF Util",
+	"description": "Fuseboxy Util (PDF)",
 	"license": "MIT",
 	"type": "fuseboxy-module",
 	"require": {
