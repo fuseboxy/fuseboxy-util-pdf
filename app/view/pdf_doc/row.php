@@ -50,6 +50,7 @@ if ( isset($xfa['makeCopy']) ) :
 		data-toggle="ajax-load"
 		data-mode="after"
 		data-target="#<?php echo $fusebox->controller; ?>-header"
+		data-confirm="Are you sure to copy [<?php echo $bean->alias; ?>]?"
 	><i class="far fa-clone"></i> Make Copy</a> <?php
 endif;
 $doc->find('.scaffold-btn-edit')->before(ob_get_clean());
