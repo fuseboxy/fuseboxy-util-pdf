@@ -23,29 +23,27 @@ if ( isset($xfa['new']) ) :
 	ob_start();
 	// new row position
 	$positions = array(
-		[
+		'top' => [
 			'btnText' => 'Add to Top',
 			'dataMode' => 'after',
 			'dataTarget' => '.scaffold-list > .scaffold-first-row',
 		],
-		[
+		'bottom' => [
 			'btnText' => 'Add to Bottom',
 			'dataMode' => 'before',
 			'dataTarget' => '.scaffold-list > .scaffold-last-row',
 		],
 	);
-	?><div class="btn-group btn-group-xs" role="group"><?php
-		foreach ( $positions as $i => $pos ) :
+	?><div id="btn-group-row-position" class="btn-group btn-group-xs" role="group"><?php
+		foreach ( $positions as $posKey => $posItem ) :
 			?><button 
 				type="button"
-				class="btn btn-outline-primary px-2 small <?php if ( $i == 0 ) echo 'active'; ?>"
-				onclick="
-					// mark selected
-					$(this).addClass('active').siblings().removeClass('active');
-					// change button target
-					$(this).closest('.scaffold-header').find('.btn-new').attr('data-mode', '<?php echo $pos['dataMode']; ?>').attr('data-target', '<?php echo $pos['dataTarget']; ?>');
-				"
-			><?php echo $pos['btnText']; ?></button><?php
+				class="btn btn-outline-primary px-2 small <?php if ( $posKey == 'top' ) echo 'active'; ?>"
+				data-position="<?php echo $posKey; ?>"
+				data-mode="<?php echo $posItem['dataMode']; ?>"
+				data-target="<?php echo $posItem['dataTarget']; ?>"
+				onclick="$(this).addClass('active').siblings().removeClass('active');"
+			><?php echo $posItem['btnText']; ?></button><?php
 		endforeach;
 	?></div><?php
 	// different row types
@@ -57,15 +55,20 @@ if ( isset($xfa['new']) ) :
 		['br','hr','pagebreak'],
 	);
 	foreach ( $types as $group ) :
-		?><div class="btn-group ml-2" role="group"><?php
+		?><div id="btn-group-row-type" class="btn-group ml-2" role="group"><?php
 			foreach ( $group as $rowType ) :
 				?><a 
 					href="<?php echo F::url($xfa['new'].'&rowType='.$rowType); ?>"
-					class="btn btn-xs btn-light b-1 btn-new"
+					class="btn btn-xs btn-light b-1"
 					data-toggle="ajax-load"
 					data-mode="after"
 					data-overlay="none"
-					data-target=".scaffold-list > .scaffold-first-row"
+					onclick="
+						// determine ajax-load [mode & target] according to [btn-row-position]
+						var $btnRowPosition = $('#btn-group-row-position .btn.active');
+						$(this).attr('data-mode', $btnRowPosition.attr('data-mode'));
+						$(this).attr('data-target', $btnRowPosition.attr('data-target'));
+					"
 				><span class="px-2 mx-1"><?php echo $rowType; ?></span></a><?php
 			endforeach; // foreach-type
 		?></div><?php
