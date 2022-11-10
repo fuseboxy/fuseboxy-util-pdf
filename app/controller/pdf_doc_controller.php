@@ -15,10 +15,22 @@ switch ( $fusebox->action ) :
 		break;
 
 
+	// duplicate doc & rows
+	case 'duplicate':
+		F::error('Argument [docID] is required', empty($arguments['docID']));
+		$duplicated = PDFDoc::duplicate($arguments['docID']);
+		F::error(PDFDoc::error(), $duplicated === false);
+		F::redirect("{$fusebox->controller}.row&id={$duplicated->id}");
+		break;
+
+
 	// crud operations
 	default:
 		// extra button
-		$xfa['editLayout'] = 'pdf_row';
+		if ( F::is('*.index,*.row') ) {
+			$xfa['editLayout'] = 'pdf_row';
+			$xfa['makeCopy'] = "{$fusebox->controller}.duplicate";
+		}
 		// config
 		$scaffold = array_merge([
 			'beanType' => 'pdfdoc',

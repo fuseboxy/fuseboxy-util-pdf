@@ -2,8 +2,10 @@
 <fusedoc>
 	<io>
 		<in>
+			<string name="controller" scope="$fusebox" />
 			<structure name="$xfa">
-				<string name="editLayout" />
+				<string name="editLayout" optional="yes" />
+				<string name="makeCopy" optional="yes" />
 			</structure>
 			<object name="$bean" type="pdfdoc">
 				<number name="id" />
@@ -26,11 +28,11 @@ include F::appPath('view/scaffold/row.php');
 $doc = Util::phpQuery(ob_get_clean());
 
 
-// layout button
+ob_start();
+// button : layout
 if ( isset($xfa['editLayout']) ) :
-	ob_start();
 	?><a 
-		href="<?php echo F::url($xfa['editLayout'].'&docID='.$bean->id); ?>"
+		href="<?php echo F::url("{$xfa['editLayout']}&docID={$bean->id}"); ?>"
 		class="btn btn-xs btn-primary"
 		data-toggle="ajax-modal"
 		data-target="#global-modal-xxl"
@@ -39,8 +41,18 @@ if ( isset($xfa['editLayout']) ) :
 			?><small>(<?php echo $rowCount; ?>)</small><?php
 		endif;
 	?></a> <?php
-	$doc->find('.scaffold-btn-edit')->before(ob_get_clean());
 endif;
+// button : copy
+if ( isset($xfa['makeCopy']) ) :
+	?><a 
+		href="<?php echo F::url("{$xfa['makeCopy']}&docID={$bean->id}"); ?>"
+		class="btn btn-xs btn-light b-1"
+		data-toggle="ajax-load"
+		data-mode="after"
+		data-target="#<?php echo $fusebox->controller; ?>-header"
+	><i class="far fa-clone"></i> Make Copy</a> <?php
+endif;
+$doc->find('.scaffold-btn-edit')->before(ob_get_clean());
 
 
 // done!

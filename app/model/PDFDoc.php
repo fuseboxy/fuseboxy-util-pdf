@@ -52,20 +52,98 @@ class PDFDoc {
 		// get related rows
 		$beanRows = ORM::get('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ORDER BY IFNULL(seq, 9999), id ', array($bean->id));
 		if ( $beanRows === false ) {
-			self::$error = "[PDFDoc::array] Error loading PDF rows (docID={$bean->id})";
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error loading PDF rows (docID='.$bean->id.')';
 			return false;
 		}
 		// transform each item from object to array
 		foreach ( $beanRows as $rowID => $rowItem ) {
 			$result[] = Bean::export($rowItem);
 			if ( $result[array_key_last($result)] === false ) {
-				self::$error = "[PDFDoc::array] Error exporting PDF row (rowID={$rowID})";
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error exporting PDF row (rowID='.$rowID.')';
 				return false;
 			}
 		}
 		// done!
 		return $result;
 	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			duplicate specific doc & all rows
+		</description>
+		<io>
+			<in>
+				<mixed name="$doc" comments="id|alias|object" />
+			</in>
+			<out>
+				<object name="~return~" type="pdfdoc" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function duplicate($doc) {
+		// load source doc
+		$doc = self::load($doc);
+		if ( $doc === false ) return false;
+		// load rows of source doc
+		$docRows = ORM::get('pdfrow', 'disabled = 0 AND pdfdoc_id = ? ', array($doc->id));
+		if ( $docRows === false ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.ORM::error();
+			return false;
+		}
+		// prepare data for new doc
+		$docData = Bean::export($doc);
+		if ( $docData === false ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Bean::error();
+			return false;
+		}
+		// clear id to create new record
+		$docData['id'] = null;
+		// prepare new alias
+		$newAliasIndex = 0;
+		do {
+			$newAliasIndex++;
+			$newAlias = "{$doc->alias} ({$newAliasIndex})";
+			$countSameAlias = ORM::count('pdfdoc', 'alias = ? ', array($newAlias));
+			if ( $countSameAlias === false ) {
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.ORM::error();
+				return false;
+			}
+		} while ( $countSameAlias > 0 );
+		$docData['alias'] = $newAlias;
+		// proceed to create new doc
+		$newDoc = ORM::saveNew('pdfdoc', $docData);
+		if ( $newDoc === false ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.ORM::error();
+			return false;
+		}
+		// create rows for new doc
+		foreach ( $docRows as $docRowItem ) {
+			// prepare data for new row
+			$rowData = Bean::export($docRowItem);
+			if ( $rowData === false ) {
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Bean::error();
+				return false;
+			}
+			// clear id to create new record
+			$rowData['id'] = null;
+			// make to new doc
+			$rowData['pdfdoc_id'] = $newDoc->id;
+			// proceed to create new row
+			$newRow = ORM::saveNew('pdfrow', $rowData);
+			if ( $newRow === false ) {
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.ORM::error();
+				return false;
+			}
+		}
+		// done!
+		return $newDoc;
+	}
+
 
 
 
@@ -90,30 +168,30 @@ class PDFDoc {
 			$bean = $doc;
 			$beanType = Bean::type($bean);
 			if ( $beanType === false ) {
-				self::$error = '[PDFDoc::load] '.Bean::error();
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Bean::error();
 				return false;
 			} elseif ( $beanType != 'pdfdoc' ) {
-				self::$error = "[PDFDoc::load] Invalid object type ({$beanType})";
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Invalid object type ('.$beanType.')';
 				return false;
 			}
 		// load record (when necessary)
 		} elseif ( is_numeric($doc) or is_string($doc) ) {
 			$bean = is_numeric($doc) ? ORM::get('pdfdoc', $doc) : ORM::first('pdfdoc', 'alias = ? ORDER BY alias, id ', [ $doc ]);
 			if ( $bean === false ) {
-				self::$error = '[PDFDoc::load] '.ORM::error();
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.ORM::error();
 				return false;
 			} elseif ( empty($bean->id) ) {
-				self::$error = "[PDFDoc::load] PDF doc not found (docID={$doc})";
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] PDF doc not found (docID='.$doc.')';
 				return false;
 			}
 		// invalid...
 		} else {
-			self::$error = '[PDFDoc::load] Invalid doc format';
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Invalid doc format';
 			return false;
 		}
 		// check status
 		if ( !empty($bean->disabled) ) {
-			self::$error = "[PDFDoc::load] PDF doc was disabled ({$bean->alias})";
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] PDF doc was disabled ('.$bean->alias.')';
 			return false;
 		}
 		// done!
@@ -146,7 +224,7 @@ class PDFDoc {
 		$format = strtolower($format);
 		// validation
 		if ( !in_array($format, ['pdf','html']) ) {
-			self::$error = "[PDFDoc::render] Invalid format to render ({$format})";
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Invalid format to render ('.$format.')';
 			return false;
 		}
 		// load data
@@ -155,7 +233,7 @@ class PDFDoc {
 		// display as pdf directly (or capture html output)
 		$result = ( $format == 'pdf' ) ? Util_PDF::array2pdf($data) : Util_PDF::array2html($data);
 		if ( $result === false ) {
-			self::$error = '[PDFDoc::render] '.Util_PDF::error();
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Util_PDF::error();
 			return false;
 		}
 		// done!
