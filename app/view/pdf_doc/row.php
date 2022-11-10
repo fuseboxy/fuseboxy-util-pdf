@@ -46,7 +46,7 @@ endif;
 if ( isset($xfa['makeCopy']) ) :
 	?><a 
 		href="<?php echo F::url("{$xfa['makeCopy']}&docID={$bean->id}"); ?>"
-		class="btn btn-xs bg-light btn-outline-primary"
+		class="btn btn-xs btn-outline-primary text-primary bg-light"
 		data-toggle="ajax-load"
 		data-mode="after"
 		data-target="#<?php echo $fusebox->controller; ?>-header"
