@@ -73,7 +73,7 @@ class Util_PDF {
 			// validation
 			$renderMethod = 'array2html__'.$item['type'];
 			if ( !method_exists(__CLASS__, $renderMethod) ) {
-				self::$error = '[Util_PDF::array2html] Unknown type ('.$item['type'].')';
+				self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Unknown type ('.$item['type'].')';
 				return false;
 			}
 			// render item as corresponding type
@@ -493,7 +493,7 @@ class Util_PDF {
 		// validate library
 		$libClass = self::$libPath['html2pdf'];
 		if ( !class_exists($libClass) ) {
-			self::$error = "[Util_PDF::html2pdf] mPDF library is missing ({$libClass}) - Please use <em>composer</em> to install <strong>mpdf/mpdf</strong> into your project";
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] mPDF library is missing ('.$libClass.') - Please use <em>composer</em> to install <strong>mpdf/mpdf</strong> into your project';
 			return false;
 		}
 		// start!
@@ -520,7 +520,7 @@ class Util_PDF {
 		// determine output location
 		$result = array('path' => Util::uploadDir($filePath), 'url'  => Util::uploadUrl($filePath));
 		if ( $result['path'] === false or $result['url'] === false ) {
-			self::$error = '[Util_PDF::html2pdf] '.Util::error();
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Util::error();
 			return false;
 		}
 		// save into file
