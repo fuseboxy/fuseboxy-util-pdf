@@ -456,6 +456,8 @@ class Util_PDF {
 	<fusedoc>
 		<description>
 			convert html to PDF file
+			===> https://mpdf.github.io/reference/mpdf-functions/construct.html
+			===> https://mpdf.github.io/reference/mpdf-variables/overview.html
 		</description>
 		<io>
 			<in>
@@ -470,12 +472,9 @@ class Util_PDF {
 						[A5] 148 x 210
 					</string>
 					<string name="orientation" default="P" value="P|L" />
-					<string name="fontFamily" default="Times" />
-					<string name="fontStyle" default="" />
-					<string name="fontSize" default="12" />
-					<structure name="margin">
-						<number name="L|R|T" default="10" comments="1cm" />
-					</structure>
+					<string name="fontFamily" default="" />
+					<number name="fontSize" default="12" />
+					<number name="marginTop|marginLeft|marginRight|marginBottom" default="10" comments="1cm" />
 				</structure>
 			</in>
 			<out>
@@ -499,12 +498,21 @@ class Util_PDF {
 		}
 		// start!
 		$pdf = new Mpdf\Mpdf([
-			'mode' => '+aCJK',
 			'format' => $pageOptions['paperSize'] ?? 'A4',
+			'orientation' => $pageOptions['orientation'] ?? 'P',
+			// font
+			'default_font' => $pageOptions['fontFamily'] ?? '',
+			'default_font_size' => $pageOptions['fontSize'] ?? 12,
+			// margin
+			'margin_top' => $pageOptions['marginTop'] ?? 10,
+			'margin_left' => $pageOptions['marginLeft'] ?? 10,
+			'margin_right' => $pageOptions['marginRight'] ?? 10,
+			'margin_bottom' => $pageOptions['marginBottom'] ?? 10,
+			// magic config for CKJ characters (e.g. Chinese)
+			'mode' => '+aCJK',
+			'autoLangToFont' => true,
+			'autoScriptToLang' => true,
 		]);
-		// magic config for CKJ characters
-		$pdf->autoLangToFont = true;
-		$pdf->autoScriptToLang = true;
 		// write output to file
 		$pdf->WriteHTML($html);
 		// view as PDF directly (when file path not specified)
