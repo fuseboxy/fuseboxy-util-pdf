@@ -496,18 +496,23 @@ class Util_PDF {
 			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] mPDF library is missing ('.$libClass.') - Please use <em>composer</em> to install <strong>mpdf/mpdf</strong> into your project';
 			return false;
 		}
+		// create (writeable) temp directory
+		$tempDir = self::tmpDir('mpdf');
+		if ( $tempDir === false ) return false;
 		// start!
 		$pdf = new Mpdf\Mpdf([
 			'format' => $pageOptions['paperSize'] ?? 'A4',
 			'orientation' => $pageOptions['orientation'] ?? 'P',
-			// font
+			// font settings
 			'default_font' => $pageOptions['fontFamily'] ?? '',
 			'default_font_size' => $pageOptions['fontSize'] ?? 12,
-			// margin
+			// margin settings
 			'margin_top' => $pageOptions['marginTop'] ?? 10,
 			'margin_left' => $pageOptions['marginLeft'] ?? 10,
 			'margin_right' => $pageOptions['marginRight'] ?? 10,
 			'margin_bottom' => $pageOptions['marginBottom'] ?? 10,
+			// temp directory
+			'tempDir' => $tempDir,
 			// magic config for CKJ characters (e.g. Chinese)
 			'mode' => '+aCJK',
 			'autoLangToFont' => true,
@@ -517,14 +522,63 @@ class Util_PDF {
 		$pdf->WriteHTML($html);
 		// view as PDF directly (when file path not specified)
 		if ( $filePath === null or $filePath === false ) exit($pdf->Output());
-		// determine output location
-		$result = array('path' => Util::uploadDir($filePath), 'url'  => Util::uploadUrl($filePath));
-		if ( $result['path'] === false or $result['url'] === false ) {
-			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Util::error();
-			return false;
-		}
+		// determine output location (when necessary)
+		$result = array('path' => self::uploadDir($filePath), 'url'  => self::uploadUrl($filePath));
+		if ( $result['path'] === false or $result['url'] === false ) return false;
 		// save into file
 		$pdf->Output($result['path']);
+		// done!
+		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			load tmpDir from framework config or constant
+			===> append with specified sub-path
+			===> create directory in server
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<string name="$fusebox->config['tmpDir']|FUSEBOXY_UTIL_TMP_DIR" />
+				<!-- param -->
+				<path name="$append" optional="yes" comments="file path to append" />
+			</in>
+			<out>
+				<!-- new directory -->
+				<path name="dirname(~tmpDir~/~append~)" optional="yes" />
+				<!-- return value -->
+				<string name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function tmpDir($append='') {
+		if ( class_exists('F') ) $result = F::config('tmpDir');
+		elseif ( defined('FUSEBOXY_UTIL_TMP_DIR') ) $result = FUSEBOXY_UTIL_TMP_DIR;
+		// validation
+		if ( empty($result) ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Config [tmpDir] is required';
+			return false;
+		}
+		// unify directory separator
+		$result = str_ireplace('\\', '/', $result);
+		$append = str_ireplace('\\', '/', $append);
+		// add trailing slash (when necessary)
+		if ( substr($result, -1) != '/' ) $result .= '/';
+		// append file path
+		$result .= $append;
+		// create directory (when necessary)
+		$dir2create = dirname($result);
+		if ( !is_dir($dir2create) and !mkdir($dir2create, 0777, true) ) {
+			$err = error_get_last();
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error creating directory ('.$err['message'].')';
+			return false;
+		}
 		// done!
 		return $result;
 	}
