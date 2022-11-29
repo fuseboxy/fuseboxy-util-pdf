@@ -496,10 +496,22 @@ class Util_PDF {
 			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] mPDF library is missing ('.$libClass.') - Please use <em>composer</em> to install <strong>mpdf/mpdf</strong> into your project';
 			return false;
 		}
+		// convert image path
+		// ===> replace {relative-url} to {absolute-server-path}
+		// ===> make sure image could be loaded into pdf
+		list($uploadDir, $uploadUrl) = [ self::uploadDir(), self::uploadUrl() ];
+		if ( $uploadDir === false or $uploadUrl === false ) return false;
+		$html = str_ireplace([
+			"src='".$uploadUrl,
+			'src="'.$uploadUrl,
+		], [
+			"src='".$uploadDir,
+			'src="'.$uploadDir,
+		], $html);
 		// create (writeable) temp directory
 		$tempDir = self::tmpDir('mpdf');
 		if ( $tempDir === false ) return false;
-		// start!
+		// initiate library
 		$pdf = new Mpdf\Mpdf([
 			'format' => $pageOptions['paperSize'] ?? 'A4',
 			'orientation' => $pageOptions['orientation'] ?? 'P',
