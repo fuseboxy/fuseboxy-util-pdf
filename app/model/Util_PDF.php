@@ -499,8 +499,11 @@ class Util_PDF {
 		// convert image path
 		// ===> replace {relative-url} to {absolute-server-path}
 		// ===> make sure image could be loaded into pdf
-		list($uploadDir, $uploadUrl) = [ self::uploadDir(), self::uploadUrl() ];
-		if ( $uploadDir === false or $uploadUrl === false ) return false;
+		list($uploadDir, $uploadUrl) = [ Util::uploadDir(), Util::uploadUrl() ];
+		if ( $uploadDir === false or $uploadUrl === false ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Util::error();
+			return false;
+		}
 		$html = str_ireplace([
 			"src='".$uploadUrl,
 			'src="'.$uploadUrl,
@@ -535,8 +538,11 @@ class Util_PDF {
 		// view as PDF directly (when file path not specified)
 		if ( $filePath === null or $filePath === false ) exit($pdf->Output());
 		// determine output location (when necessary)
-		$result = array('path' => self::uploadDir($filePath), 'url'  => self::uploadUrl($filePath));
-		if ( $result['path'] === false or $result['url'] === false ) return false;
+		$result = array('path' => Util::uploadDir($filePath), 'url'  => Util::uploadUrl($filePath));
+		if ( $result['path'] === false or $result['url'] === false ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Util::error();
+			return false;
+		}
 		// save into file
 		$pdf->Output($result['path']);
 		// done!
@@ -591,98 +597,6 @@ class Util_PDF {
 			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error creating directory ('.$err['message'].')';
 			return false;
 		}
-		// done!
-		return $result;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			load uploadDir from framework config or constant
-			===> append with specified sub-path
-			===> create directory in server
-		</description>
-		<io>
-			<in>
-				<!-- config -->
-				<string name="$fusebox->config['uploadDir']|FUSEBOXY_UTIL_UPLOAD_DIR" />
-				<!-- param -->
-				<path name="$append" optional="yes" comments="file path to append" />
-			</in>
-			<out>
-				<!-- new directory -->
-				<path name="dirname(~uploadDir~/~append~)" optional="yes" />
-				<!-- return value -->
-				<string name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function uploadDir($append='') {
-		if ( class_exists('F') ) $result = F::config('uploadDir');
-		elseif ( defined('FUSEBOXY_UTIL_UPLOAD_DIR') ) $result = FUSEBOXY_UTIL_UPLOAD_DIR;
-		// validation
-		if ( empty($result) ) {
-			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Config [uploadDir] is required';
-			return false;
-		}
-		// unify directory separator
-		$result = str_ireplace('\\', '/', $result);
-		$append = str_ireplace('\\', '/', $append);
-		// add trailing slash (when necessary)
-		if ( substr($result, -1) != '/' ) $result .= '/';
-		// append file path
-		$result .= $append;
-		// create directory (when necessary)
-		$dir2create = dirname($result);
-		if ( !is_dir($dir2create) and !mkdir($dir2create, 0777, true) ) {
-			$err = error_get_last();
-			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error creating directory ('.$err['message'].')';
-			return false;
-		}
-		// done!
-		return $result;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			load uploadUrl from framework config or constant
-		</description>
-		<io>
-			<in>
-				<!-- config -->
-				<string name="$fusebox->config['uploadUrl']|FUSEBOXY_UTIL_UPLOAD_URL" />
-				<!-- param -->
-				<path name="$append" optional="yes" comments="file path to append" />
-			</in>
-			<out>
-				<string name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function uploadUrl($append='') {
-		if ( class_exists('F') ) $result = F::config('uploadUrl');
-		elseif ( defined('FUSEBOXY_UTIL_UPLOAD_URL') ) $result = FUSEBOXY_UTIL_UPLOAD_URL;
-		// validation
-		if ( empty($result) ) {
-			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Config [uploadUrl] is required';
-			return false;
-		}
-		// unify directory separator
-		$result = str_ireplace('\\', '/', $result);
-		$append = str_ireplace('\\', '/', $append);
-		// add trailing slash (when necessary)
-		if ( substr($result, -1) != '/' ) $result .= '/';
-		// append file path
-		$result .= $append;
 		// done!
 		return $result;
 	}
