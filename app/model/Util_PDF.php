@@ -541,7 +541,11 @@ class Util_PDF {
 		// view as PDF directly (when file path not specified)
 		if ( $filePath === null or $filePath === false ) exit($pdf->Output());
 		// determine output location (when necessary)
-		$result = array('path' => Util::uploadDir($filePath), 'url'  => Util::uploadUrl($filePath));
+		// ===> specify sub-directory in uploadDir() method to create directory automatically
+		$result = array(
+			'path' => Util::uploadDir(dirname($filePath)).basename($filePath),
+			'url'  => Util::uploadUrl().$filePath,
+		);
 		if ( $result['path'] === false or $result['url'] === false ) {
 			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Util::error();
 			return false;
