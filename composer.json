@@ -4,8 +4,13 @@
 	"license": "MIT",
 	"type": "fuseboxy-module",
 	"require": {
-		"fuseboxy/fuseboxy-installer": "2.2.x",
+		"fuseboxy/fuseboxy-installer": "1.*",
 		"mpdf/mpdf" : "^8.1"
 	},
-	"autoload": { "files": [ "app/model/PDFDoc.php", "app/model/Util_PDF.php" ] }
+	"autoload": {
+		"files": [
+			"app/model/PDFDoc.php",
+			"app/model/Util_PDF.php"
+		]
+	}
 }
