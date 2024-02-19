@@ -1,2 +1,2 @@
-Fuseboxy Util PDF
-=================
+Fuseboxy Util PDF (1.x)
+=======================
